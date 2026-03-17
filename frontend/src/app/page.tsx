@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
+import DnaLogo from "@/components/DnaLogo";
 import GenePanel from "@/components/GenePanel";
 import KmerHeatmap from "@/components/KmerHeatmap";
 import VariantBrowser from "@/components/VariantBrowser";
@@ -21,21 +22,28 @@ export default function Home() {
       <header className="border-b border-border bg-surface/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image
-              src="/dna-logo.svg"
-              alt="Genomic One"
-              width={32}
-              height={32}
-              className="dark:invert"
-            />
+            <DnaLogo className="w-8 h-8 text-foreground" />
             <div>
               <h1 className="text-lg font-bold tracking-tight">Genomic One</h1>
               <p className="text-xs text-zinc-500">AI-Native Genomic Analysis</p>
             </div>
           </div>
-          <span className="text-xs text-zinc-500 bg-zinc-800/50 px-2 py-1 rounded">
-            In Development
-          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/brain/memories"
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-zinc-400 hover:text-accent transition-colors"
+              aria-label="Open Brain"
+              title="Brain"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a8 8 0 018 8c0 3-1.5 5.5-4 7v3H8v-3c-2.5-1.5-4-4-4-7a8 8 0 018-8z" />
+                <line x1="10" y1="22" x2="14" y2="22" />
+              </svg>
+            </Link>
+            <span className="text-xs text-zinc-500 bg-zinc-800/50 px-2 py-1 rounded">
+              In Development
+            </span>
+          </div>
         </div>
       </header>
 

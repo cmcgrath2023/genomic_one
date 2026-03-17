@@ -4,29 +4,98 @@ AI-native genomic intelligence platform built with Rust, designed for life scien
 
 **Live dashboard**: https://cmcgrath2023.github.io/genomic_one/
 
-## 5-Layer Intelligence Architecture
+## Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│  Layer 5: Decision / Advisory           │  Synthesized insights, explainability
-│  ─────────────────────────────────────  │
-│  Layer 4: Bayesian Learning             │  Savant-style trait learning, priors
-│  ─────────────────────────────────────  │
-│  Layer 3: Neural Classification         │  ruv-FANN variant/pathway scoring
-│  ─────────────────────────────────────  │
-│  Layer 2: Vector Intelligence           │  RuVector HNSW, KmerIndex, MinCut
-│  ─────────────────────────────────────  │
-│  Layer 1: Genomic Core                  │  rvdna pipeline, sequences, variants
-└─────────────────────────────────────────┘
+                            ┌──────────────────────────────────────────┐
+                            │           GENOMIC ONE PLATFORM           │
+                            └──────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                              FRONTEND (Next.js 16 / React 19)                  │
+  │                                                                                 │
+  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐    │
+  │  │  Dashboard    │  │  Brain       │  │  Brain       │  │  Brain           │    │
+  │  │  (Gene Panel, │  │  /memories   │  │  /learning   │  │  /pathways       │    │
+  │  │   K-mer, 3D   │  │  Vector      │  │  Bayesian    │  │  MinCut graph    │    │
+  │  │   Protein,    │  │  similarity  │  │  priors,     │  │  Drug target     │    │
+  │  │   Variants,   │  │  graph       │  │  neural      │  │  identification  │    │
+  │  │   Epigenetic,  │  │              │  │  models      │  │                  │    │
+  │  │   Pharma/GLP-1)│  │              │  │              │  │                  │    │
+  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘    │
+  │         │                  │                  │                   │              │
+  │  ┌──────┴──────────────────┴──────────────────┴───────────────────┴──────────┐  │
+  │  │                    HeroUI + Recharts + Three.js + Framer Motion           │  │
+  │  │                    Collapsible Brain Sidebar (hamburger-react mobile)     │  │
+  │  └──────────────────────────────────┬───────────────────────────────────────┘  │
+  └─────────────────────────────────────┼──────────────────────────────────────────┘
+                                        │ REST API (JSON)
+                                        ▼
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                              BACKEND (Rust / Axum)                              │
+  │                                                                                 │
+  │  ┌────────────────────────────────────────────────────────────────────────────┐ │
+  │  │                         API Layer (port 8080)                              │ │
+  │  │  /api/panel  /api/kmer  /api/variants  /api/protein  /api/epigenetics     │ │
+  │  │  /api/pharma  /api/rvdna  /api/brain/memories  /api/brain/learning        │ │
+  │  │  /api/brain/pathways                                                       │ │
+  │  └───────────────────────────────────┬────────────────────────────────────────┘ │
+  │                                      │                                          │
+  │  ┌───────────────────────────────────┴────────────────────────────────────────┐ │
+  │  │                     5-LAYER INTELLIGENCE SYSTEM                            │ │
+  │  │                                                                            │ │
+  │  │  ┌──────────────────────────────────────────────────────────────────────┐  │ │
+  │  │  │  L5: DECISION / ADVISORY                                            │  │ │
+  │  │  │  Multi-signal synthesis → explainable recommendations               │  │ │
+  │  │  │  Drug target identification, risk assessment                        │  │ │
+  │  │  └────────────────────────────────┬─────────────────────────────────────┘  │ │
+  │  │  ┌────────────────────────────────┴─────────────────────────────────────┐  │ │
+  │  │  │  L4: BAYESIAN LEARNING (Savant-inspired)                            │  │ │
+  │  │  │  Trait-based probabilistic reasoning, prior distributions           │  │ │
+  │  │  │  Long-term pattern recognition, meta-cognitive reflection           │  │ │
+  │  │  └────────────────────────────────┬─────────────────────────────────────┘  │ │
+  │  │  ┌────────────────────────────────┴─────────────────────────────────────┐  │ │
+  │  │  │  L3: NEURAL CLASSIFICATION (ruv-FANN)                               │  │ │
+  │  │  │  Variant pathogenicity scoring, cascade networks                    │  │ │
+  │  │  │  Gene expression forecasting, drug interaction prediction           │  │ │
+  │  │  └────────────────────────────────┬─────────────────────────────────────┘  │ │
+  │  │  ┌────────────────────────────────┴─────────────────────────────────────┐  │ │
+  │  │  │  L2: VECTOR INTELLIGENCE (RuVector)                                 │  │ │
+  │  │  │  HNSW-indexed k-mer vectors, KmerIndex similarity search            │  │ │
+  │  │  │  MinCut pathway analysis, sublinear PageRank                        │  │ │
+  │  │  └────────────────────────────────┬─────────────────────────────────────┘  │ │
+  │  │  ┌────────────────────────────────┴─────────────────────────────────────┐  │ │
+  │  │  │  L1: GENOMIC CORE (rvdna)                                           │  │ │
+  │  │  │  Gene sequences → k-mer vectorization → Smith-Waterman alignment    │  │ │
+  │  │  │  Variant calling → protein translation → epigenetic clock           │  │ │
+  │  │  │  Pharmacogenomics (CYP2D6, GLP-1 interactions) → RVDNA format      │  │ │
+  │  │  └─────────────────────────────────────────────────────────────────────┘  │ │
+  │  └────────────────────────────────────────────────────────────────────────────┘ │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                              DEPLOYMENT                                         │
+  │                                                                                 │
+  │  GitHub Pages (static export) ← GitHub Actions (on push to master)              │
+  │  Local dev: frontend :3005 │ backend :8080                                      │
+  └─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| 1. Genomic Core | [rvdna](https://crates.io/crates/rvdna) | Sequence analysis, variant calling, protein translation, epigenetic clock, pharmacogenomics |
-| 2. Vector Intelligence | [RuVector](https://github.com/ruvnet/RuVector) | HNSW similarity search, k-mer indexing, [MinCut](https://github.com/ruvnet/RuVector/tree/main/examples/mincut) pathway analysis, [sublinear](https://crates.io/crates/sublinear) PageRank |
-| 3. Neural Classification | [ruv-FANN](https://github.com/ruvnet/ruv-FANN) | Variant pathogenicity scoring, gene expression forecasting, cascade networks |
-| 4. Bayesian Learning | [Savant AI](https://github.com/bar181/savant-ai-results) | Trait-based probabilistic reasoning, long-term pattern recognition, meta-cognition |
-| 5. Decision / Advisory | Custom | Multi-signal synthesis, drug target identification, risk assessment |
+## Data Flow
+
+```
+Sequence Data ──→ L1: rvdna pipeline
+                    ├── k-mer vectors ──→ L2: RuVector HNSW index + MinCut
+                    │                       ├── classified vectors ──→ L3: ruv-FANN neural nets
+                    │                       │                           ├── scored patterns ──→ L4: Bayesian prior updates
+                    │                       │                           │                        └──→ L5: Advisory output
+                    │                       │                           └── variant pathogenicity, drug response predictions
+                    │                       └── pathway partitions, similarity clusters
+                    ├── variant calls ──→ sickle cell detection, pathogenicity scoring
+                    ├── protein translation ──→ contact graph, 3D visualization
+                    ├── epigenetic clock ──→ biological age prediction
+                    └── pharmacogenomics ──→ CYP2D6 star alleles, GLP-1 RA recommendations
+```
 
 ## Current Features
 
@@ -34,21 +103,11 @@ AI-native genomic intelligence platform built with Rust, designed for life scien
 - **K-mer Vectorization**: 11-mer frequency vectors (512 dimensions) with cosine similarity
 - **Smith-Waterman Alignment**: Local alignment with mapping quality scoring
 - **Variant Calling**: Simulated pileup analysis with sickle cell detection
-- **Protein Translation**: HBB to hemoglobin beta with contact graph prediction
+- **Protein Translation**: HBB to hemoglobin beta with 3D contact graph
 - **Epigenetic Clock**: Horvath clock biological age estimation
-- **Pharmacogenomics**: CYP2D6 star allele calling with drug recommendations
+- **Pharmacogenomics**: CYP2D6 star allele calling with GLP-1 receptor agonist recommendations, risk flags, and clinical interpretation
 - **RVDNA Format**: AI-native binary format with pre-indexed k-mer vectors
-
-## Brain Dashboard (In Progress)
-
-The "Brain" sidebar provides access to the intelligence layers:
-
-| Route | Content |
-|-------|---------|
-| `/brain/memories` | RuVector stored memories, similarity graph visualization |
-| `/brain/learning` | Bayesian priors, neural model status, long-term patterns |
-| `/brain/pathways` | MinCut pathway analysis, drug target identification |
-| `/brain/advisory` | Synthesized recommendations, risk assessment |
+- **Brain Dashboard**: Collapsible sidebar with Memories, Learning, Pathways, and Advisory views
 
 ## Quick Start
 
@@ -72,7 +131,7 @@ cargo run -- path/to/23andme.txt
 |-------|-------|
 | Pipeline | Rust, rvdna, ruvector-core, ruvector-solver |
 | API | Axum, Tokio, tower-http (CORS) |
-| Frontend | Next.js 16, React 19, HeroUI, Recharts, Three.js |
+| Frontend | Next.js 16, React 19, HeroUI, Recharts, Three.js, Framer Motion |
 | Deploy | GitHub Pages (static export via GitHub Actions) |
 
 ## Specifications
@@ -86,7 +145,6 @@ Feature specs follow [GitHub's Spec-Kit](https://github.com/github/spec-kit) for
 - [ruv-FANN](https://github.com/ruvnet/ruv-FANN) — Pure Rust neural network framework
 - [Savant AI](https://github.com/bar181/savant-ai-results) — Bayesian trait-learning cognitive agents
 - [Sublinear](https://crates.io/crates/sublinear) — Sublinear-time sparse solvers (included via rvdna)
-- [RuView](https://github.com/ruvnet/RuView) — WiFi-based human perception (future: patient monitoring)
 
 ## License
 
