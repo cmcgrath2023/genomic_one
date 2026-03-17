@@ -196,7 +196,14 @@ export default function BrainSidebar() {
         style={active ? { background: 'rgba(0,201,177,0.1)', borderLeft: '2px solid var(--accent-teal)' } : {}}
       >
         <span className="flex-shrink-0">{item.icon}</span>
-        {(!collapsed || isMobile) && <span>{item.label}</span>}
+        {(!collapsed || isMobile) && (
+              <span className="flex items-center gap-2">
+                {item.label}
+                {item.href === "/brain/architecture" && (
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ color: 'var(--accent-gold)', background: 'rgba(240,180,41,0.1)' }}>DEV</span>
+                )}
+              </span>
+            )}
       </Link>
     );
 
