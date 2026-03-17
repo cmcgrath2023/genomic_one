@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import { DM_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { AppShell } from "./app-shell";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -34,7 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${dmMono.variable} ${ibmPlexSans.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );

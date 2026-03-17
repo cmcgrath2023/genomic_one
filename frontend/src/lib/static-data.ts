@@ -249,6 +249,42 @@ export const trajectoryData = {
   },
 };
 
+export const moleculeData = {
+  target_pathway: "BRCA1 DNA Repair Pathway",
+  candidates: [
+    {
+      id: 1,
+      smiles: "CC(=O)Nc1ccc(O)cc1",
+      name: "Candidate A — Acetaminophen analogue",
+      binding_affinity: 8.2,
+      toxicity: "low" as const,
+      drug_similarity: { drug: "Acetaminophen", percent: 89 },
+      molecular_weight: 151.16,
+      logP: 0.46,
+    },
+    {
+      id: 2,
+      smiles: "COc1ccc2[nH]c(=O)c(-c3ccccc3)c2c1",
+      name: "Candidate B — Quinolinone scaffold",
+      binding_affinity: 7.4,
+      toxicity: "moderate" as const,
+      drug_similarity: { drug: "Olaparib", percent: 42 },
+      molecular_weight: 253.28,
+      logP: 2.31,
+    },
+    {
+      id: 3,
+      smiles: "NC(=O)c1cccc(-c2noc3cc(F)ccc23)c1",
+      name: "Candidate C — Benzisoxazole derivative",
+      binding_affinity: 9.1,
+      toxicity: "low" as const,
+      drug_similarity: { drug: "Rucaparib", percent: 56 },
+      molecular_weight: 270.24,
+      logP: 1.85,
+    },
+  ],
+};
+
 export const pathwaysData = {
   nodes: [
     { id: 0, gene_name: "TP53", node_type: "suppressor" },

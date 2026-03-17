@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Progress, Chip } from "@heroui/react";
+import { Progress } from "@heroui/react";
 
 const GENES = [
-  { name: "HBB", color: "#06b6d4" },
-  { name: "TP53", color: "#8b5cf6" },
-  { name: "BRCA1", color: "#f43f5e" },
-  { name: "CYP2D6", color: "#10b981" },
-  { name: "INS", color: "#f59e0b" },
+  { name: "HBB", full: "Hemoglobin Beta", color: "#06b6d4" },
+  { name: "TP53", full: "Tumor Suppressor", color: "#8b5cf6" },
+  { name: "BRCA1", full: "DNA Repair", color: "#f43f5e" },
+  { name: "CYP2D6", full: "Drug Metabolism", color: "#10b981" },
+  { name: "INS", full: "Insulin", color: "#f59e0b" },
 ];
 
 const STAGGER_MS = 300;
@@ -43,53 +43,57 @@ export default function StreamingProgress() {
   }, []);
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-zinc-300">MidStream Analysis</h3>
-          <Chip
-            variant="flat"
-            size="sm"
-            classNames={{
-              base: complete ? "bg-accent-3/15" : "bg-cyan-500/15",
-              content: complete ? "text-accent-3" : "text-cyan-400",
-            }}
-          >
-            {complete ? "Complete" : "Streaming Active"}
-          </Chip>
+    <div className="panel-card genomic">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <span className="panel-label mb-0">MidStream Analysis</span>
+          {complete ? (
+            <span
+              className="text-xs font-mono px-2 py-0.5 rounded"
+              style={{ color: 'var(--accent-teal)', background: 'rgba(0,201,177,0.1)' }}
+            >
+              Complete
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full animate-pulse-live" style={{ background: 'var(--streaming-pulse)' }} />
+              <span className="text-xs font-mono" style={{ color: 'var(--streaming-pulse)' }}>Streaming</span>
+            </span>
+          )}
         </div>
-        {!complete && (
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse-live" />
-            <span className="text-xs text-zinc-400">Live</span>
-          </div>
-        )}
+        <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+          {progress.filter(p => p >= 100).length}/{GENES.length} genes analyzed
+        </span>
       </div>
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
         {GENES.map((gene, i) => (
-          <div key={gene.name} className="space-y-1">
+          <div key={gene.name} className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-zinc-400">{gene.name}</span>
-              <span className="text-xs font-mono text-zinc-500">{progress[i]}%</span>
+              <div>
+                <span className="text-sm font-mono font-semibold" style={{ color: 'var(--text-primary)' }}>{gene.name}</span>
+                <span className="text-xs ml-1.5 hidden sm:inline" style={{ color: 'var(--text-muted)' }}>{gene.full}</span>
+              </div>
+              <span
+                className="text-lg font-mono font-bold tabular-nums"
+                style={{ color: progress[i] >= 100 ? 'var(--accent-teal)' : gene.color }}
+              >
+                {progress[i]}%
+              </span>
             </div>
             <Progress
               value={progress[i]}
               maxValue={100}
-              size="sm"
+              size="md"
               classNames={{
-                indicator: progress[i] >= 100 ? "bg-accent-3" : "",
-                track: "bg-surface-2",
+                track: "bg-zinc-800/50",
               }}
-              style={
-                progress[i] < 100
-                  ? { ["--heroui-progress-indicator-bg" as string]: gene.color }
-                  : undefined
-              }
+              style={{
+                ["--heroui-progress-indicator-bg" as string]: progress[i] >= 100 ? 'var(--accent-teal)' : gene.color,
+              }}
             />
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-zinc-600 mt-2">Simulated Data · In Silico Environment</p>
     </div>
   );
 }

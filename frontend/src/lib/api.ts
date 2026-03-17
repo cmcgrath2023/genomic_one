@@ -24,3 +24,4 @@ export const getRvdna = () => fetchEndpoint("/api/rvdna", staticData.rvdnaData);
 export const getMemories = () => fetchEndpoint("/api/brain/memories", staticData.memoriesData);
 export const getLearning = () => fetchEndpoint("/api/brain/learning", staticData.learningData);
 export const getPathways = () => fetchEndpoint("/api/brain/pathways", staticData.pathwaysData);
+export const getMolecules = () => fetchEndpoint("/api/brain/molecules", staticData.moleculeData);

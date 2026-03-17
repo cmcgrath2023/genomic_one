@@ -88,6 +88,7 @@ body {
 .panel-card.flagged    { border-top: 2px solid var(--accent-red); }
 
 .panel-label {
+  display: block;
   font-family: var(--font-dm-mono), var(--font-geist-mono), monospace;
   font-size: 0.7rem;
   letter-spacing: 0.15em;
