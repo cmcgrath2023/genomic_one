@@ -75,6 +75,18 @@ const navItems: NavItem[] = [
     ),
   },
   {
+    label: "Simulate",
+    href: "/brain/simulate",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 3h6v2H9zM12 5v3M5.5 8h13l-1.5 13H7z" />
+        <circle cx="10" cy="14" r="1" />
+        <circle cx="14" cy="14" r="1" />
+        <line x1="10" y1="17" x2="14" y2="17" />
+      </svg>
+    ),
+  },
+  {
     label: "Federation",
     href: "/brain/federation",
     icon: (
