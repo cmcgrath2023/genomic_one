@@ -89,7 +89,7 @@ export default function StreamingProgress() {
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-zinc-600 mt-2">Simulated Data — Demo Environment</p>
+      <p className="text-[10px] text-zinc-600 mt-2">Simulated Data · In Silico Environment</p>
     </div>
   );
 }

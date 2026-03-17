@@ -21,39 +21,50 @@ const ProteinViewer = dynamic(() => import("@/components/ProteinViewer"), {
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Demo Environment Banner */}
-      <div className="bg-amber-500/10 border-b border-amber-500/20 py-1.5 text-center text-xs text-amber-400">
-        Simulated Data — Demo Environment
+      {/* In Silico Banner */}
+      <div
+        className="py-1.5 text-center font-mono text-xs"
+        style={{ background: '#1A1200', borderBottom: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}
+      >
+        <span className="font-semibold text-sm tracking-wide">IN SILICO</span>
+        <span className="mx-2">·</span>
+        Computational simulation — no real patient data is used or stored
       </div>
 
       {/* Header */}
       <header className="border-b border-border bg-surface/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          {/* Left: Logo + Title */}
           <div className="flex items-center gap-3">
             <DnaLogo className="w-8 h-8 text-foreground" />
-            <div>
-              <h1 className="text-lg font-bold tracking-tight">Genomic One</h1>
-              <p className="text-xs text-zinc-500">AI-Native Genomic Analysis</p>
-            </div>
+            <h1 className="text-lg font-bold tracking-tight font-mono">GENOMIC ONE</h1>
           </div>
+
+          {/* Center: Status Badges */}
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse-live" />
-              Live
+            <span className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-mono" style={{ color: 'var(--streaming-pulse)', background: 'rgba(0,201,177,0.1)' }}>
+              <span className="w-2 h-2 rounded-full animate-pulse-live" style={{ background: 'var(--streaming-pulse)' }} />
+              MidStream Live
             </span>
-            <span className="text-xs text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded">
-              MidStream
-            </span>
-            <span className="flex items-center gap-1.5 text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
-              </span>
+            <span className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-mono" style={{ color: 'var(--safla-green)', background: 'rgba(0,229,160,0.1)' }}>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
               SAFLA Active
             </span>
+            <span className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-mono" style={{ color: 'var(--federation-node)', background: 'rgba(61,142,255,0.1)' }}>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="8,1 14.93,5 14.93,11 8,15 1.07,11 1.07,5"/></svg>
+              5/5 Nodes
+            </span>
+            <span className="text-xs px-2.5 py-1 rounded font-mono" style={{ color: 'var(--text-secondary)', background: 'rgba(122,156,199,0.1)' }}>
+              FACT-Augmented
+            </span>
+          </div>
+
+          {/* Right: In Silico label + Brain link */}
+          <div className="flex items-center gap-2">
             <Link
               href="/brain/memories"
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-zinc-400 hover:text-accent transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-surface-2 transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
               aria-label="Open Brain"
               title="Brain"
             >
@@ -62,8 +73,11 @@ export default function Home() {
                 <line x1="10" y1="22" x2="14" y2="22" />
               </svg>
             </Link>
-            <span className="text-xs text-zinc-500 bg-zinc-800/50 px-2 py-1 rounded">
-              Demo Environment
+            <span
+              className="text-xs font-mono px-2.5 py-1 rounded"
+              style={{ color: 'var(--accent-gold)', background: '#1A1200' }}
+            >
+              In Silico
             </span>
           </div>
         </div>
@@ -126,7 +140,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border py-6 mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-sm text-zinc-500">
-          Genomic One — AI-Native Genomic Intelligence
+          Genomic One — In Silico Case Study
         </div>
       </footer>
     </div>

@@ -109,7 +109,7 @@ export default function FederationPage() {
           <FlowStep label="Global Intelligence" detail="Federated model updates" />
         </div>
         <p className="text-[10px] text-zinc-600 mt-4 text-center">
-          Simulated Data — Demo Environment
+          Simulated Data · In Silico Environment
         </p>
       </div>
     </div>

@@ -221,6 +221,55 @@ export default function BrainSidebar() {
         </div>
 
         {navContent(false)}
+
+        {/* Intelligence Layers — bottom of sidebar */}
+        {!collapsed && (
+          <div className="mt-auto border-t border-border px-3 py-3">
+            <div
+              className="font-mono text-[0.6rem] uppercase tracking-[0.15em] mb-2"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Intelligence Layers
+            </div>
+            <div className="font-mono text-[0.65rem] leading-5 space-y-0.5" style={{ color: 'var(--text-secondary)' }}>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>L1</span>
+                <span className="flex-1">Genomic Core</span>
+                <span style={{ color: 'var(--accent-teal)' }}>&#9679; ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>L2</span>
+                <span className="flex-1">Vector + FACT</span>
+                <span style={{ color: 'var(--accent-teal)' }}>&#9679; ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>L3</span>
+                <span className="flex-1">Neural + Diff</span>
+                <span style={{ color: 'var(--accent-teal)' }}>&#9679; ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>L4</span>
+                <span className="flex-1">Bayesian + Temp</span>
+                <span style={{ color: 'var(--accent-teal)' }}>&#9679; ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>L5</span>
+                <span className="flex-1">Advisory</span>
+                <span style={{ color: 'var(--accent-teal)' }}>&#9679; ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>L6</span>
+                <span className="flex-1">SAFLA</span>
+                <span style={{ color: 'var(--accent-teal)' }}>&#10003; VALIDATED</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: 'var(--text-muted)' }}>&nbsp;&nbsp;</span>
+                <span className="flex-1">Federated MCP</span>
+                <span style={{ color: 'var(--federation-node)' }}>&#11045; 5/5 NODES</span>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.aside>
 
       {/* Mobile hamburger button — fixed top-left */}

@@ -304,7 +304,7 @@ export default function SimulatePage() {
 
       <div className="mt-1 mb-8">
         <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
-          Simulated Data — Demo Environment
+          Simulated Data · In Silico Environment
         </span>
       </div>
 
@@ -724,7 +724,7 @@ export default function SimulatePage() {
               </Card>
             </motion.div>
 
-            {/* E: Reasoning Chain */}
+            {/* E: Computational Reasoning Chain */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -736,10 +736,10 @@ export default function SimulatePage() {
               >
                 <AccordionItem
                   key="reasoning"
-                  aria-label="Reasoning Chain"
+                  aria-label="Computational Reasoning Chain — In Silico"
                   title={
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-zinc-300">Reasoning Chain</span>
+                      <span className="text-sm font-semibold text-zinc-300">Computational Reasoning Chain — In Silico</span>
                       <Chip size="sm" variant="flat" color="secondary">
                         5-layer intelligence pipeline
                       </Chip>
@@ -766,10 +766,10 @@ export default function SimulatePage() {
               </Accordion>
             </motion.div>
 
-            {/* Demo label */}
+            {/* In Silico label */}
             <div className="text-center">
               <span className="text-[10px] text-zinc-600">
-                Simulated Data — Demo Environment
+                Simulated Data · In Silico Environment
               </span>
             </div>
           </motion.div>

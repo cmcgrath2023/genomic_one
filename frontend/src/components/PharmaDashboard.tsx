@@ -294,7 +294,7 @@ export default function PharmaDashboard() {
           </div>
 
           <div className="flex items-center justify-between pt-1">
-            <span className="text-[10px] text-zinc-600">Simulated Data — Demo Environment</span>
+            <span className="text-[10px] text-zinc-600">Simulated Data · In Silico Environment</span>
             <Button size="sm" variant="flat" color="primary" className="text-xs">
               Clinical Override →
             </Button>

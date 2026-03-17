@@ -1,21 +1,29 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import { DM_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
+const dmMono = DM_Mono({
+  weight: ["400", "500"],
+  variable: "--font-dm-mono",
+  subsets: ["latin"],
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-sans",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Genomic One — AI-Native Genomic Analysis",
-  description: "AI-Native Genomic Intelligence Platform",
+  title: "Genomic One — In Silico Case Study",
+  description: "Clinical Decision Support Simulation · Computational Drug Discovery",
 };
 
 export default function RootLayout({
@@ -25,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body className={`${dmMono.variable} ${ibmPlexSans.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -69,7 +69,7 @@ export default function EvidenceBase({ references }: EvidenceBaseProps) {
             </div>
           ))}
           <div className="text-[10px] text-zinc-600 pt-1 border-t border-border/50">
-            Simulated Data — Demo Environment
+            Simulated Data · In Silico Environment
           </div>
         </div>
       )}

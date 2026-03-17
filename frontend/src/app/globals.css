@@ -1,44 +1,104 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --accent: #06b6d4;
-  --accent-2: #8b5cf6;
-  --accent-3: #10b981;
-  --surface: #18181b;
-  --surface-2: #27272a;
-  --border: #3f3f46;
+  /* Primary surfaces */
+  --bg-base:        #090E1A;
+  --bg-surface:     #0D1526;
+  --bg-elevated:    #111E35;
+  --bg-border:      #1C2D4A;
+
+  /* Brand */
+  --accent-teal:    #00C9B1;
+  --accent-blue:    #3D8EFF;
+  --accent-gold:    #F0B429;
+  --accent-red:     #FF4D4D;
+  --accent-purple:  #8B5CF6;
+
+  /* Typography */
+  --text-primary:   #E8F0FF;
+  --text-secondary: #7A9CC7;
+  --text-muted:     #3D5A80;
+
+  /* Special */
+  --safla-green:    #00E5A0;
+  --streaming-pulse:#00C9B1;
+  --federation-node:#3D8EFF;
+
+  /* Legacy mappings */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --accent:     var(--accent-teal);
+  --accent-2:   var(--accent-purple);
+  --accent-3:   var(--safla-green);
+  --surface:    var(--bg-surface);
+  --surface-2:  var(--bg-elevated);
+  --border:     var(--bg-border);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-accent-2: var(--accent-2);
-  --color-accent-3: var(--accent-3);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
+  --color-accent: var(--accent-teal);
+  --color-accent-2: var(--accent-purple);
+  --color-accent-3: var(--safla-green);
+  --color-surface: var(--bg-surface);
+  --color-surface-2: var(--bg-elevated);
+  --color-border: var(--bg-border);
+  --font-sans: var(--font-ibm-plex-sans), var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-dm-mono), var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  background-image:
+    linear-gradient(rgba(28, 45, 74, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 45, 74, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 3px; }
 
 /* MidStream pulse animation */
 @keyframes pulse-live {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
+  50% { opacity: 0.5; transform: scale(0.85); }
 }
 .animate-pulse-live {
   animation: pulse-live 1.5s ease-in-out infinite;
+}
+
+/* Panel card system */
+.panel-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  position: relative;
+}
+
+.panel-card.genomic    { border-top: 2px solid var(--accent-teal); }
+.panel-card.neural     { border-top: 2px solid var(--accent-blue); }
+.panel-card.molecule   { border-top: 2px solid var(--accent-purple); }
+.panel-card.warning    { border-top: 2px solid var(--accent-gold); }
+.panel-card.safla      { border-top: 2px solid var(--safla-green); }
+.panel-card.flagged    { border-top: 2px solid var(--accent-red); }
+
+.panel-label {
+  font-family: var(--font-dm-mono), var(--font-geist-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.panel-value {
+  font-family: var(--font-dm-mono), var(--font-geist-mono), monospace;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent-teal);
 }

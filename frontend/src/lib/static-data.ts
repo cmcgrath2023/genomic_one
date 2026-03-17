@@ -188,7 +188,7 @@ export const learningData = {
 
 export const saflaValidation = {
   status: "passed" as const,
-  audit_id: "GEN-2026-03-17-CYP2D6-001",
+  audit_id: "ISC-2026-03-17-CYP2D6-001",
   confidence: 0.942,
   checks: [
     { name: "Confidence Threshold", status: "passed" as const, detail: "Model confidence 94.2% exceeds 80% threshold" },
