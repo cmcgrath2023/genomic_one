@@ -4,6 +4,8 @@
 //! alignment, variant calling, protein translation, epigenomics,
 //! pharmacogenomics, and the RVDNA binary format.
 
+mod api;
+
 use rvdna::prelude::*;
 use rvdna::{
     alignment::{AlignmentConfig, SmithWaterman},
@@ -19,16 +21,16 @@ use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 /// Holds all loaded gene sequences for the analysis pipeline.
-struct GenePanel {
-    hbb: DnaSequence,
-    tp53: DnaSequence,
-    brca1: DnaSequence,
-    cyp2d6: DnaSequence,
-    insulin: DnaSequence,
+pub(crate) struct GenePanel {
+    pub(crate) hbb: DnaSequence,
+    pub(crate) tp53: DnaSequence,
+    pub(crate) brca1: DnaSequence,
+    pub(crate) cyp2d6: DnaSequence,
+    pub(crate) insulin: DnaSequence,
 }
 
 impl GenePanel {
-    fn load() -> anyhow::Result<Self> {
+    pub(crate) fn load() -> anyhow::Result<Self> {
         Ok(Self {
             hbb: DnaSequence::from_str(real_data::HBB_CODING_SEQUENCE)?,
             tp53: DnaSequence::from_str(real_data::TP53_EXONS_5_8)?,
@@ -38,22 +40,22 @@ impl GenePanel {
         })
     }
 
-    fn total_bases(&self) -> usize {
+    pub(crate) fn total_bases(&self) -> usize {
         self.hbb.len() + self.tp53.len() + self.brca1.len() + self.cyp2d6.len() + self.insulin.len()
     }
 }
 
 /// Results from the k-mer similarity stage.
-struct KmerResults {
-    hbb_vec: Vec<f32>,
-    tp53_vec: Vec<f32>,
-    brca1_vec: Vec<f32>,
-    cyp2d6_vec: Vec<f32>,
-    ins_vec: Vec<f32>,
+pub(crate) struct KmerResults {
+    pub(crate) hbb_vec: Vec<f32>,
+    pub(crate) tp53_vec: Vec<f32>,
+    pub(crate) brca1_vec: Vec<f32>,
+    pub(crate) cyp2d6_vec: Vec<f32>,
+    pub(crate) ins_vec: Vec<f32>,
 }
 
 impl KmerResults {
-    fn compute(panel: &GenePanel, k: usize, dims: usize) -> anyhow::Result<Self> {
+    pub(crate) fn compute(panel: &GenePanel, k: usize, dims: usize) -> anyhow::Result<Self> {
         Ok(Self {
             hbb_vec: panel.hbb.to_kmer_vector(k, dims)?,
             tp53_vec: panel.tp53.to_kmer_vector(k, dims)?,
@@ -63,7 +65,7 @@ impl KmerResults {
         })
     }
 
-    fn similarity_matrix(&self) -> Vec<(&str, &str, f32)> {
+    pub(crate) fn similarity_matrix(&self) -> Vec<(&str, &str, f32)> {
         vec![
             ("HBB", "TP53", cosine_similarity(&self.hbb_vec, &self.tp53_vec)),
             ("HBB", "BRCA1", cosine_similarity(&self.hbb_vec, &self.brca1_vec)),
@@ -75,13 +77,26 @@ impl KmerResults {
     }
 }
 
-fn main() -> anyhow::Result<()> {
-    // Check for 23andMe file argument
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 {
+
+    if args.iter().any(|a| a == "--serve") {
+        let subscriber = FmtSubscriber::builder()
+            .with_max_level(Level::INFO)
+            .finish();
+        tracing::subscriber::set_global_default(subscriber)?;
+        return api::serve().await;
+    }
+
+    if args.len() > 1 && !args[1].starts_with('-') {
         return run_23andme(&args[1]);
     }
 
+    run_pipeline()
+}
+
+fn run_pipeline() -> anyhow::Result<()> {
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::INFO)
         .finish();
@@ -299,19 +314,19 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
+pub(crate) fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
     let dot: f32 = a.iter().zip(b).map(|(x, y)| x * y).sum();
     let mag_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
     let mag_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
     if mag_a == 0.0 || mag_b == 0.0 { 0.0 } else { dot / (mag_a * mag_b) }
 }
 
-fn gc_content(seq: &DnaSequence) -> f64 {
+pub(crate) fn gc_content(seq: &DnaSequence) -> f64 {
     let gc = seq.bases().iter().filter(|&&b| b == Nucleotide::G || b == Nucleotide::C).count();
     gc as f64 / seq.len() as f64
 }
 
-fn char_to_residue(c: char) -> ProteinResidue {
+pub(crate) fn char_to_residue(c: char) -> ProteinResidue {
     match c {
         'A' => ProteinResidue::A, 'R' => ProteinResidue::R, 'N' => ProteinResidue::N,
         'D' => ProteinResidue::D, 'C' => ProteinResidue::C, 'E' => ProteinResidue::E,
