@@ -12,11 +12,11 @@ interface KmerSimilarity {
 const GENES = ["HBB", "TP53", "BRCA1", "CYP2D6", "INS"];
 
 function getColor(value: number): string {
-  // Map 0.35-0.55 range to color intensity
+  // Map 0.35-0.55 range to teal intensity (visible on dark backgrounds)
   const t = Math.max(0, Math.min(1, (value - 0.35) / 0.2));
-  const r = Math.round(6 + t * 0);
-  const g = Math.round(30 + t * 152);
-  const b = Math.round(60 + t * 152);
+  const r = Math.round(13 + t * 0);
+  const g = Math.round(40 + t * 161);
+  const b = Math.round(70 + t * 107);
   return `rgb(${r}, ${g}, ${b})`;
 }
 
