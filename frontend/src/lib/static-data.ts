@@ -186,6 +186,69 @@ export const learningData = {
   ],
 };
 
+export const saflaValidation = {
+  status: "passed" as const,
+  audit_id: "GEN-2026-03-17-CYP2D6-001",
+  confidence: 0.942,
+  checks: [
+    { name: "Confidence Threshold", status: "passed" as const, detail: "Model confidence 94.2% exceeds 80% threshold" },
+    { name: "Contraindication Check", status: "passed" as const, detail: "No known drug-drug interactions flagged" },
+    { name: "Population Coverage", status: "warning" as const, detail: "Training data underrepresents East Asian CYP2D6 allele frequencies" },
+    { name: "Regulatory Classification", status: "passed" as const, detail: "CPIC Level A guideline — strong recommendation" },
+  ],
+  regulatory_standard: "PharmGKB / CPIC Level A",
+  timestamp: "2026-03-17T08:20:00Z",
+};
+
+export const federationData = {
+  nodes: [
+    { id: "CPH", name: "Copenhagen", country: "DK", flag: "\u{1F1E9}\u{1F1F0}", status: "active" as const, sequences: 1200000, role: "Primary EU Hub", dataResidency: "EU" },
+    { id: "PRI", name: "Princeton", country: "US", flag: "\u{1F1FA}\u{1F1F8}", status: "active" as const, sequences: 890000, role: "R&D Processing", dataResidency: "US" },
+    { id: "SEA", name: "Seattle", country: "US", flag: "\u{1F1FA}\u{1F1F8}", status: "active" as const, sequences: 2100000, role: "Clinical Trials", dataResidency: "US" },
+    { id: "BLR", name: "Bangalore", country: "IN", flag: "\u{1F1EE}\u{1F1F3}", status: "active" as const, sequences: 450000, role: "Manufacturing QC", dataResidency: "IN" },
+    { id: "OXF", name: "Oxford", country: "UK", flag: "\u{1F1EC}\u{1F1E7}", status: "active" as const, sequences: 780000, role: "Academic Research", dataResidency: "UK" },
+  ],
+  total_sequences: 5420000,
+  active_nodes: 5,
+  total_nodes: 5,
+};
+
+export const trajectoryData = {
+  brca1: {
+    label: "BRCA1 185delAG Carrier — Cancer Risk",
+    points: [
+      { age: 30, risk: 8, lower: 5, upper: 12 },
+      { age: 40, risk: 19, lower: 14, upper: 25 },
+      { age: 50, risk: 35, lower: 28, upper: 43, flag: "Screening recommended" },
+      { age: 60, risk: 52, lower: 44, upper: 61, flag: "High risk threshold" },
+      { age: 70, risk: 65, lower: 56, upper: 74 },
+      { age: 80, risk: 72, lower: 62, upper: 80 },
+    ],
+  },
+  cyp2d6_metabolism: {
+    label: "CYP2D6 *1/*4 — Age-Related Metabolism Change",
+    points: [
+      { age: 30, risk: 85, lower: 80, upper: 90 },
+      { age: 40, risk: 78, lower: 72, upper: 84 },
+      { age: 50, risk: 68, lower: 60, upper: 76, flag: "Dose review recommended" },
+      { age: 60, risk: 55, lower: 46, upper: 64 },
+      { age: 70, risk: 42, lower: 32, upper: 52, flag: "Reduced clearance" },
+      { age: 80, risk: 30, lower: 20, upper: 40 },
+    ],
+  },
+  t2d_insulin: {
+    label: "INS Locus — T2D Risk Trajectory (Epigenetic Age-Adjusted)",
+    points: [
+      { age: 30, risk: 5, lower: 3, upper: 8 },
+      { age: 40, risk: 12, lower: 8, upper: 17 },
+      { age: 50, risk: 24, lower: 18, upper: 31, flag: "Lifestyle intervention window" },
+      { age: 60, risk: 38, lower: 30, upper: 47 },
+      { age: 70, risk: 48, lower: 38, upper: 58, flag: "GLP-1 RA consideration" },
+      { age: 80, risk: 55, lower: 44, upper: 66 },
+    ],
+  },
+};
+
 export const pathwaysData = {
   nodes: [
     { id: 0, gene_name: "TP53", node_type: "suppressor" },

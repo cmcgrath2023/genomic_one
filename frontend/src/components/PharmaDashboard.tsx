@@ -1,8 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardBody, Chip, Progress } from "@heroui/react";
+import { Card, CardBody, Chip, Progress, Button } from "@heroui/react";
 import { getPharma } from "@/lib/api";
+import { saflaValidation } from "@/lib/static-data";
+import EvidenceBase, { Reference } from "@/components/EvidenceBase";
+
+const PHARMA_REFERENCES: Reference[] = [
+  { title: "CYP2D6 pharmacogenomics and GLP-1 receptor agonist metabolism", source: "Clinical Pharmacology & Therapeutics", year: 2024, relevance: 4 },
+  { title: "Semaglutide metabolic pathways in type 2 diabetes management", source: "NEJM", year: 2023, relevance: 3 },
+  { title: "PharmGKB CYP2D6 clinical annotation — drug dosing guidelines", source: "PharmGKB", year: 2024, relevance: 5 },
+  { title: "Impact of CYP2D6 polymorphisms on incretin-based therapy outcomes", source: "Diabetes Care", year: 2023, relevance: 4 },
+];
 
 interface PharmaResult {
   sequence_length: number;
@@ -183,6 +192,115 @@ export default function PharmaDashboard() {
           </div>
         </div>
       </div>
+
+      {/* FACT Literature Evidence */}
+      <EvidenceBase references={PHARMA_REFERENCES} />
+
+      {/* SAFLA Safety Validation */}
+      <Card className="bg-surface-2 border border-border">
+        <CardBody className="gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-green-400">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <polyline points="9 12 12 15 16 10" />
+                </svg>
+              </span>
+              <span className="font-semibold text-sm">SAFLA Validated</span>
+              <Chip
+                size="sm"
+                variant="flat"
+                color={
+                  saflaValidation.status === "passed"
+                    ? "success"
+                    : saflaValidation.status === "warning"
+                      ? "warning"
+                      : "danger"
+                }
+              >
+                {saflaValidation.status === "passed"
+                  ? "PASSED"
+                  : saflaValidation.status === "warning"
+                    ? "WARNING"
+                    : "FLAGGED"}
+              </Chip>
+            </div>
+            <span className="text-[10px] text-zinc-500">Powered by SAFLA</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div>
+              <span className="text-zinc-500">Audit ID</span>
+              <div className="font-mono mt-0.5">{saflaValidation.audit_id}</div>
+            </div>
+            <div>
+              <span className="text-zinc-500">Confidence</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <Progress
+                  value={saflaValidation.confidence * 100}
+                  maxValue={100}
+                  size="sm"
+                  classNames={{
+                    indicator: "bg-green-500",
+                    track: "bg-zinc-800",
+                  }}
+                  className="max-w-[100px]"
+                />
+                <span className="font-mono">{(saflaValidation.confidence * 100).toFixed(1)}%</span>
+              </div>
+            </div>
+            <div>
+              <span className="text-zinc-500">Regulatory Standard</span>
+              <div className="mt-0.5">{saflaValidation.regulatory_standard}</div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {saflaValidation.checks.map((check, i) => (
+              <div key={i} className="flex items-start gap-2 text-xs">
+                <span className={`mt-0.5 ${check.status === "passed" ? "text-green-400" : check.status === "warning" ? "text-amber-400" : "text-red-400"}`}>
+                  {check.status === "passed" ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : check.status === "warning" ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  )}
+                </span>
+                <div>
+                  <span className="font-medium text-zinc-300">{check.name}</span>
+                  <Chip
+                    size="sm"
+                    variant="dot"
+                    color={check.status === "passed" ? "success" : check.status === "warning" ? "warning" : "danger"}
+                    className="ml-2 scale-90"
+                  >
+                    {check.status.toUpperCase()}
+                  </Chip>
+                  <p className="text-zinc-500 mt-0.5">{check.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[10px] text-zinc-600">Simulated Data — Demo Environment</span>
+            <Button size="sm" variant="flat" color="primary" className="text-xs">
+              Clinical Override →
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }

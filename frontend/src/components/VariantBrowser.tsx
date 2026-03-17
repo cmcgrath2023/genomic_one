@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { Chip } from "@heroui/react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { getVariants, getAlignment } from "@/lib/api";
+import EvidenceBase, { Reference } from "@/components/EvidenceBase";
+
+const VARIANT_REFERENCES: Reference[] = [
+  { title: "Sickle cell disease: molecular pathogenesis and therapeutic targets", source: "Nature Reviews", year: 2023, relevance: 5 },
+  { title: "HBB variant classification guidelines — ACMG/AMP standards", source: "Genetics in Medicine", year: 2024, relevance: 4 },
+];
 
 interface Variant {
   position: number;
@@ -122,6 +128,9 @@ export default function VariantBrowser() {
           </div>
         </div>
       ))}
+
+      {/* FACT Literature Evidence */}
+      <EvidenceBase references={VARIANT_REFERENCES} />
     </div>
   );
 }
