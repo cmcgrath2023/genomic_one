@@ -130,15 +130,15 @@ export default function ProteinViewer() {
       </div>
       <div className="flex flex-wrap gap-3 text-sm">
         <div>
-          <span className="text-zinc-500">Length: </span>
+          <span className="text-zinc-400">Length: </span>
           <span className="font-mono">{data.length} aa</span>
         </div>
         <div>
-          <span className="text-zinc-500">Contacts: </span>
+          <span className="text-zinc-400">Contacts: </span>
           <span className="font-mono">{data.contact_edges} edges</span>
         </div>
         <div>
-          <span className="text-zinc-500">N-term: </span>
+          <span className="text-zinc-400">N-term: </span>
           <span className="font-mono text-xs">{data.first_20_aa}</span>
         </div>
       </div>

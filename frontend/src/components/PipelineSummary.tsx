@@ -44,7 +44,7 @@ export default function PipelineSummary() {
         {stats.map((s) => (
           <div key={s.label} className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-            <span className="text-xs text-zinc-500">{s.label}:</span>
+            <span className="text-xs text-zinc-400">{s.label}:</span>
             <span className="text-sm font-mono font-semibold">{s.value}</span>
           </div>
         ))}

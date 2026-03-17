@@ -298,7 +298,7 @@ export default function SimulatePage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Patient Case Simulation</h1>
-          <p className="text-zinc-500 text-sm">In Silico Clinical Decision Support</p>
+          <p className="text-zinc-400 text-sm">In Silico Clinical Decision Support</p>
         </div>
       </div>
 
@@ -516,7 +516,7 @@ export default function SimulatePage() {
             {/* Section divider */}
             <div className="flex items-center gap-3">
               <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-zinc-500 font-medium">SIMULATION RESULTS</span>
+              <span className="text-xs text-zinc-400 font-medium">SIMULATION RESULTS</span>
               <div className="h-px flex-1 bg-border" />
             </div>
 
@@ -531,16 +531,16 @@ export default function SimulatePage() {
                   <h3 className="text-sm font-semibold text-zinc-300">Metabolizer Classification</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <div className="text-xs text-zinc-500">CYP2D6 Diplotype</div>
+                      <div className="text-xs text-zinc-400">CYP2D6 Diplotype</div>
                       <div className="text-2xl font-mono font-bold mt-1">{result.diplotype}</div>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-zinc-500">
+                      <div className="flex items-center gap-2 mt-1 text-xs text-zinc-400">
                         <span>Allele 1: <span className="font-mono text-zinc-300">{result.allele1} ({result.activity1.toFixed(1)})</span></span>
-                        <span className="text-zinc-600">|</span>
+                        <span className="text-zinc-400">|</span>
                         <span>Allele 2: <span className="font-mono text-zinc-300">{result.allele2} ({result.activity2.toFixed(1)})</span></span>
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-zinc-500">Phenotype</div>
+                      <div className="text-xs text-zinc-400">Phenotype</div>
                       <div className="mt-1">
                         <Chip color={phenotypeColor} variant="flat" size="lg">
                           {result.phenotype} Metabolizer
@@ -548,7 +548,7 @@ export default function SimulatePage() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-zinc-500">Activity Score</div>
+                      <div className="text-xs text-zinc-400">Activity Score</div>
                       <div className="text-2xl font-mono font-bold mt-1">{result.totalActivity.toFixed(1)}</div>
                       <Progress
                         value={result.totalActivity * 50}
@@ -585,7 +585,7 @@ export default function SimulatePage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-border text-zinc-500 text-xs">
+                        <tr className="border-b border-border text-zinc-400 text-xs">
                           <th className="text-left py-2 px-3 font-medium">Risk</th>
                           <th className="text-left py-2 px-3 font-medium">Drug</th>
                           <th className="text-left py-2 px-3 font-medium">Clinical Recommendation</th>
@@ -685,15 +685,15 @@ export default function SimulatePage() {
                         {result.confidence >= 0.85 ? "PASSED" : "PASSED WITH WARNINGS"}
                       </Chip>
                     </div>
-                    <span className="text-[10px] text-zinc-500">Powered by SAFLA</span>
+                    <span className="text-[10px] text-zinc-400">Powered by SAFLA</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                     <div>
-                      <span className="text-zinc-500">Audit ID</span>
+                      <span className="text-zinc-400">Audit ID</span>
                       <div className="font-mono mt-0.5">{result.auditId}</div>
                     </div>
                     <div>
-                      <span className="text-zinc-500">Confidence</span>
+                      <span className="text-zinc-400">Confidence</span>
                       <div className="flex items-center gap-2 mt-0.5">
                         <Progress
                           value={result.confidence * 100}
@@ -709,7 +709,7 @@ export default function SimulatePage() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-zinc-500">Population</span>
+                      <span className="text-zinc-400">Population</span>
                       <div className="mt-0.5">
                         {result.ethnicity}
                         {result.confidence < 0.85 && (
@@ -754,11 +754,11 @@ export default function SimulatePage() {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-zinc-300">{step.label}</div>
-                          <div className="text-xs text-zinc-500">{step.detail}</div>
+                          <div className="text-xs text-zinc-400">{step.detail}</div>
                         </div>
                       </div>
                     ))}
-                    <div className="text-[10px] text-zinc-600 mt-2 pt-2 border-t border-border">
+                    <div className="text-[10px] text-zinc-400 mt-2 pt-2 border-t border-border">
                       Full reasoning chain — 5-layer intelligence pipeline
                     </div>
                   </div>
@@ -768,7 +768,7 @@ export default function SimulatePage() {
 
             {/* In Silico label */}
             <div className="text-center">
-              <span className="text-[10px] text-zinc-600">
+              <span className="text-[10px] text-zinc-400">
                 Simulated Data · In Silico Environment
               </span>
             </div>

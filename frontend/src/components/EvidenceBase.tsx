@@ -52,7 +52,7 @@ export default function EvidenceBase({ references }: EvidenceBaseProps) {
               key={i}
               className="flex items-start gap-3 text-sm"
             >
-              <span className="text-zinc-600 font-mono text-xs mt-0.5 shrink-0">
+              <span className="text-zinc-400 font-mono text-xs mt-0.5 shrink-0">
                 [{i + 1}]
               </span>
               <div className="flex-1 min-w-0">
@@ -60,7 +60,7 @@ export default function EvidenceBase({ references }: EvidenceBaseProps) {
                   &ldquo;{ref.title}&rdquo;
                 </div>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-zinc-500 text-xs">
+                  <span className="text-zinc-400 text-xs">
                     {ref.source}, {ref.year}
                   </span>
                   <Stars count={ref.relevance} />
@@ -68,7 +68,7 @@ export default function EvidenceBase({ references }: EvidenceBaseProps) {
               </div>
             </div>
           ))}
-          <div className="text-[10px] text-zinc-600 pt-1 border-t border-border/50">
+          <div className="text-[10px] text-zinc-400 pt-1 border-t border-border/50">
             Simulated Data · In Silico Environment
           </div>
         </div>

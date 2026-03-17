@@ -106,7 +106,7 @@ export default function VariantBrowser() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
             <div>
-              <span className="text-zinc-500 text-xs">Ref/Alt</span>
+              <span className="text-zinc-400 text-xs">Ref/Alt</span>
               <div className="font-mono">
                 <span className="text-green-400">{v.ref_allele}</span>
                 {" → "}
@@ -114,15 +114,15 @@ export default function VariantBrowser() {
               </div>
             </div>
             <div>
-              <span className="text-zinc-500 text-xs">Depth</span>
+              <span className="text-zinc-400 text-xs">Depth</span>
               <div className="font-mono">{v.depth}x</div>
             </div>
             <div>
-              <span className="text-zinc-500 text-xs">Quality</span>
+              <span className="text-zinc-400 text-xs">Quality</span>
               <div className="font-mono">{v.quality.toFixed(1)}</div>
             </div>
             <div>
-              <span className="text-zinc-500 text-xs">Mutation</span>
+              <span className="text-zinc-400 text-xs">Mutation</span>
               <div className="font-mono text-xs">A→T at codon 6 (Glu→Val)</div>
             </div>
           </div>

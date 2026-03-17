@@ -47,29 +47,29 @@ export default function EpigeneticClock() {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-bold text-accent">{data.predicted_age.toFixed(1)}</span>
-          <span className="text-xs text-zinc-500">biological years</span>
+          <span className="text-xs text-zinc-400">biological years</span>
         </div>
       </div>
 
       {/* Stats */}
       <div className="space-y-4 flex-1">
         <div>
-          <div className="text-xs text-zinc-500 mb-1">Horvath Clock Model</div>
+          <div className="text-xs text-zinc-400 mb-1">Horvath Clock Model</div>
           <div className="text-sm text-zinc-300">
             Estimates biological age from DNA methylation patterns at CpG dinucleotide sites.
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-surface-2 rounded-lg p-3">
-            <div className="text-xs text-zinc-500">CpG Sites</div>
+            <div className="text-xs text-zinc-400">CpG Sites</div>
             <div className="text-lg font-mono font-semibold">{data.cpg_sites}</div>
           </div>
           <div className="bg-surface-2 rounded-lg p-3">
-            <div className="text-xs text-zinc-500">Mean Methylation</div>
+            <div className="text-xs text-zinc-400">Mean Methylation</div>
             <div className="text-lg font-mono font-semibold">{data.mean_methylation.toFixed(3)}</div>
           </div>
         </div>
-        <div className="text-xs text-zinc-600">
+        <div className="text-xs text-zinc-400">
           Beta values range 0.0 (unmethylated) to 1.0 (fully methylated)
         </div>
       </div>

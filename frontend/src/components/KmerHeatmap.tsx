@@ -79,7 +79,7 @@ export default function KmerHeatmap() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-2 mt-4 text-xs text-zinc-500">
+      <div className="flex items-center gap-2 mt-4 text-xs text-zinc-400">
         <span>Low</span>
         <div className="flex gap-0.5">
           {Array.from({ length: 10 }).map((_, i) => (
@@ -91,7 +91,7 @@ export default function KmerHeatmap() {
           ))}
         </div>
         <span>High</span>
-        <span className="ml-2 text-zinc-600">(cosine, k=11, d=512)</span>
+        <span className="ml-2 text-zinc-400">(cosine, k=11, d=512)</span>
       </div>
     </div>
   );

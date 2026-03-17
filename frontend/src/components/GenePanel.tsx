@@ -57,12 +57,12 @@ export default function GenePanel() {
             </CardHeader>
             <CardBody className="pt-1 pb-3 px-4 gap-2">
               <div className="flex justify-between text-sm">
-                <span className="text-zinc-500">{gene.chromosome}</span>
+                <span className="text-zinc-400">{gene.chromosome}</span>
                 <span className="font-mono">{gene.length} bp</span>
               </div>
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-zinc-500">GC Content</span>
+                  <span className="text-zinc-400">GC Content</span>
                   <span className="font-mono">{gene.gc_content.toFixed(1)}%</span>
                 </div>
                 <Progress

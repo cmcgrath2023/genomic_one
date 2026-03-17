@@ -26,7 +26,7 @@ export default function FederationPage() {
           </span>
         </Chip>
       </div>
-      <p className="text-zinc-500 text-sm max-w-2xl">
+      <p className="text-zinc-400 text-sm max-w-2xl">
         Genomic data never leaves its jurisdiction. Intelligence compounds globally.
         GDPR Article 44 compliant by architecture.
       </p>
@@ -41,7 +41,7 @@ export default function FederationPage() {
                   <span className="text-xl">{node.flag}</span>
                   <div>
                     <h3 className="font-semibold text-sm">{node.name}</h3>
-                    <p className="text-xs text-zinc-500">{node.country}</p>
+                    <p className="text-xs text-zinc-400">{node.country}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -52,13 +52,13 @@ export default function FederationPage() {
 
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs">
-                  <span className="text-zinc-500">Sequences</span>
+                  <span className="text-zinc-400">Sequences</span>
                   <span className="font-mono text-zinc-300">
                     {(node.sequences / 1_000_000).toFixed(1)}M
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-zinc-500">Role</span>
+                  <span className="text-zinc-400">Role</span>
                   <span className="text-zinc-300">{node.role}</span>
                 </div>
               </div>
@@ -83,7 +83,7 @@ export default function FederationPage() {
             <div className="text-3xl font-bold text-accent">
               {(total_sequences / 1_000_000).toFixed(1)}M
             </div>
-            <p className="text-xs text-zinc-500 text-center">Total Sequences Across Federation</p>
+            <p className="text-xs text-zinc-400 text-center">Total Sequences Across Federation</p>
             <Chip
               variant="flat"
               size="sm"
@@ -108,7 +108,7 @@ export default function FederationPage() {
           <FlowArrow />
           <FlowStep label="Global Intelligence" detail="Federated model updates" />
         </div>
-        <p className="text-[10px] text-zinc-600 mt-4 text-center">
+        <p className="text-[10px] text-zinc-400 mt-4 text-center">
           Simulated Data · In Silico Environment
         </p>
       </div>
@@ -120,14 +120,14 @@ function FlowStep({ label, detail }: { label: string; detail: string }) {
   return (
     <div className="flex flex-col items-center text-center px-4 py-3 rounded-lg border border-border bg-surface-2 min-w-[160px]">
       <span className="text-sm font-semibold text-zinc-200">{label}</span>
-      <span className="text-[11px] text-zinc-500 mt-1">{detail}</span>
+      <span className="text-[11px] text-zinc-400 mt-1">{detail}</span>
     </div>
   );
 }
 
 function FlowArrow() {
   return (
-    <div className="text-zinc-600 px-2 sm:rotate-0 rotate-90">
+    <div className="text-zinc-400 px-2 sm:rotate-0 rotate-90">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="5" y1="12" x2="19" y2="12" />
         <polyline points="12 5 19 12 12 19" />

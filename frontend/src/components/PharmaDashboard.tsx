@@ -71,16 +71,16 @@ export default function PharmaDashboard() {
         {/* Diplotype Card */}
         <Card className="bg-surface-2 border border-border">
           <CardBody className="gap-2">
-            <div className="text-xs text-zinc-500">CYP2D6 Diplotype</div>
+            <div className="text-xs text-zinc-400">CYP2D6 Diplotype</div>
             <div className="text-2xl font-mono font-bold">{diplotype}</div>
             <div className="flex items-center gap-2 mt-1">
               <div className="flex gap-1">
-                <span className="text-xs text-zinc-500">Allele 1:</span>
+                <span className="text-xs text-zinc-400">Allele 1:</span>
                 <span className="text-xs font-mono">{allele1Display} ({data.allele1.activity.toFixed(1)})</span>
               </div>
-              <span className="text-zinc-600">|</span>
+              <span className="text-zinc-400">|</span>
               <div className="flex gap-1">
-                <span className="text-xs text-zinc-500">Allele 2:</span>
+                <span className="text-xs text-zinc-400">Allele 2:</span>
                 <span className="text-xs font-mono">{allele2Display} ({data.allele2.activity.toFixed(1)})</span>
               </div>
             </div>
@@ -90,13 +90,13 @@ export default function PharmaDashboard() {
         {/* Metabolizer Phenotype Card */}
         <Card className="bg-surface-2 border border-border">
           <CardBody className="gap-2">
-            <div className="text-xs text-zinc-500">Metabolizer Phenotype</div>
+            <div className="text-xs text-zinc-400">Metabolizer Phenotype</div>
             <div className="flex items-center gap-2 mt-1">
               <Chip color={PHENOTYPE_COLORS[data.phenotype] || "default"} variant="flat" size="lg">
                 {data.phenotype} Metabolizer
               </Chip>
             </div>
-            <div className="text-xs text-zinc-500 mt-1">
+            <div className="text-xs text-zinc-400 mt-1">
               {PHENOTYPE_DESCRIPTIONS[data.phenotype] || ""}
             </div>
           </CardBody>
@@ -105,7 +105,7 @@ export default function PharmaDashboard() {
         {/* Activity Score Card */}
         <Card className="bg-surface-2 border border-border">
           <CardBody className="gap-2">
-            <div className="text-xs text-zinc-500">Activity Score</div>
+            <div className="text-xs text-zinc-400">Activity Score</div>
             <div className="text-2xl font-mono font-bold">{totalActivity.toFixed(1)}</div>
             <Progress
               value={totalActivity * 50}
@@ -116,7 +116,7 @@ export default function PharmaDashboard() {
                 track: "bg-zinc-800",
               }}
             />
-            <div className="text-xs text-zinc-500">{data.sequence_length} bp analyzed</div>
+            <div className="text-xs text-zinc-400">{data.sequence_length} bp analyzed</div>
           </CardBody>
         </Card>
       </div>
@@ -125,7 +125,7 @@ export default function PharmaDashboard() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border text-zinc-500 text-xs">
+            <tr className="border-b border-border text-zinc-400 text-xs">
               <th className="text-left py-2 px-3 font-medium">Risk</th>
               <th className="text-left py-2 px-3 font-medium">Drug</th>
               <th className="text-left py-2 px-3 font-medium">Clinical Recommendation</th>
@@ -226,16 +226,16 @@ export default function PharmaDashboard() {
                     : "FLAGGED"}
               </Chip>
             </div>
-            <span className="text-[10px] text-zinc-500">Powered by SAFLA</span>
+            <span className="text-[10px] text-zinc-400">Powered by SAFLA</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div>
-              <span className="text-zinc-500">Audit ID</span>
+              <span className="text-zinc-400">Audit ID</span>
               <div className="font-mono mt-0.5">{saflaValidation.audit_id}</div>
             </div>
             <div>
-              <span className="text-zinc-500">Confidence</span>
+              <span className="text-zinc-400">Confidence</span>
               <div className="flex items-center gap-2 mt-0.5">
                 <Progress
                   value={saflaValidation.confidence * 100}
@@ -251,7 +251,7 @@ export default function PharmaDashboard() {
               </div>
             </div>
             <div>
-              <span className="text-zinc-500">Regulatory Standard</span>
+              <span className="text-zinc-400">Regulatory Standard</span>
               <div className="mt-0.5">{saflaValidation.regulatory_standard}</div>
             </div>
           </div>
@@ -287,14 +287,14 @@ export default function PharmaDashboard() {
                   >
                     {check.status.toUpperCase()}
                   </Chip>
-                  <p className="text-zinc-500 mt-0.5">{check.detail}</p>
+                  <p className="text-zinc-400 mt-0.5">{check.detail}</p>
                 </div>
               </div>
             ))}
           </div>
 
           <div className="flex items-center justify-between pt-1">
-            <span className="text-[10px] text-zinc-600">Simulated Data · In Silico Environment</span>
+            <span className="text-[10px] text-zinc-400">Simulated Data · In Silico Environment</span>
             <Button size="sm" variant="flat" color="primary" className="text-xs">
               Clinical Override →
             </Button>
