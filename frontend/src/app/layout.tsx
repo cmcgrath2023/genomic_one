@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Genomic One — AI-Native Genomic Analysis",
-  description: "Interactive genomic analysis dashboard powered by rvdna",
+  description: "AI-Native Genomic Intelligence Platform",
 };
 
 export default function RootLayout({

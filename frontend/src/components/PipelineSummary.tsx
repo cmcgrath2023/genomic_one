@@ -50,8 +50,8 @@ export default function PipelineSummary() {
         ))}
       </div>
       <div className="mt-3 flex gap-2">
-        <Chip size="sm" variant="flat" color="primary">rvdna 0.3.0</Chip>
-        <Chip size="sm" variant="flat" color="secondary">RuVector</Chip>
+        <Chip size="sm" variant="flat" color="primary">Genomic Core</Chip>
+        <Chip size="sm" variant="flat" color="secondary">Vector Intelligence</Chip>
         <Chip size="sm" variant="flat" color="success">Pure Rust</Chip>
       </div>
     </div>
