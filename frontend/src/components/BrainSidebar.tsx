@@ -35,7 +35,7 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        label: "Simulate",
+        label: "Simulations",
         href: "/brain/simulate",
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -141,6 +141,90 @@ const navSections: NavSection[] = [
   },
 ];
 
+const CREATE_OPTIONS = [
+  { label: "Simulation", desc: "In silico patient case study", href: "/brain/simulate", icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 3h6v2H9zM12 5v3M5.5 8h13l-1.5 13H7z" />
+    </svg>
+  )},
+  { label: "Research Pod", desc: "Multi-gene analysis workspace", href: "/brain/memories", icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+    </svg>
+  )},
+  { label: "Report", desc: "Generate clinical decision report", href: "/brain/advisory", icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  )},
+];
+
+function CreateButton({ collapsed, onNavigate }: { collapsed: boolean; onNavigate: () => void }) {
+  const [open, setOpen] = useState(false);
+
+  if (collapsed) {
+    return (
+      <Tooltip content="Create" placement="right">
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-center justify-center rounded-full py-2 mb-2 mx-auto w-10 h-10 transition-all duration-150"
+          style={{ background: 'white', color: 'black' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5v6H5v2h6v6h2v-6h6v-2h-6V5z" /></svg>
+        </button>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <div className="relative mb-2">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center justify-center gap-2.5 w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-150"
+        style={{
+          background: 'transparent',
+          border: '1.5px solid var(--bg-border)',
+          color: 'var(--text-primary)',
+        }}
+      >
+        <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 dark:bg-white dark:text-black bg-black text-white">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5v6H5v2h6v6h2v-6h6v-2h-6V5z" /></svg>
+        </span>
+        Create
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 right-0 mt-1 rounded-xl overflow-hidden z-50 shadow-xl"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-border)' }}
+          >
+            {CREATE_OPTIONS.map((opt, i) => (
+              <Link
+                key={opt.label}
+                href={opt.href}
+                onClick={() => { setOpen(false); onNavigate(); }}
+                className="flex items-start gap-3 px-4 py-3 transition-colors duration-100 hover:bg-white/5"
+                style={{ borderTop: i > 0 ? '1px solid var(--bg-border)' : 'none' }}
+              >
+                <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--accent-teal)' }}>{opt.icon}</span>
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: 'var(--accent-teal)' }}>{opt.label}</div>
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{opt.desc}</div>
+                </div>
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function BrainSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -220,33 +304,8 @@ export default function BrainSidebar() {
 
   const navContent = (isMobile: boolean) => (
     <nav className="flex flex-col px-2 py-2">
-      {/* Create button */}
-      {(!collapsed || isMobile) && (
-        <Link
-          href="/brain/simulate"
-          onClick={() => isMobile && setMobileOpen(false)}
-          className="flex items-center gap-2 rounded-lg px-3 py-2.5 mb-2 text-sm font-mono font-semibold transition-colors duration-150"
-          style={{ background: 'rgba(0,201,177,0.1)', color: 'var(--accent-teal)', border: '1px solid rgba(0,201,177,0.2)' }}
-        >
-          <span className="w-5 h-5 rounded-full border-2 dark:border-white border-black dark:text-white text-black flex items-center justify-center flex-shrink-0">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="6" x2="12" y2="18" /><line x1="6" y1="12" x2="18" y2="12" /></svg>
-          </span>
-          Create
-        </Link>
-      )}
-      {collapsed && !isMobile && (
-        <Tooltip content="Create" placement="right">
-          <Link
-            href="/brain/simulate"
-            className="flex items-center justify-center rounded-lg py-2.5 mb-2 transition-colors duration-150"
-            style={{ background: 'rgba(0,201,177,0.1)', color: 'var(--accent-teal)' }}
-          >
-            <span className="w-6 h-6 rounded-full border-2 dark:border-white border-black dark:text-white text-black flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="6" x2="12" y2="18" /><line x1="6" y1="12" x2="18" y2="12" /></svg>
-            </span>
-          </Link>
-        </Tooltip>
-      )}
+      {/* Create button with flyout */}
+      <CreateButton collapsed={collapsed && !isMobile} onNavigate={() => isMobile && setMobileOpen(false)} />
       {navSections.map((section, si) => (
         <div key={si} className={si > 0 ? "mt-2" : ""}>
           {section.heading && !collapsed && (
