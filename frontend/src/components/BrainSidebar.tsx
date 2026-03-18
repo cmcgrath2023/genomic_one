@@ -142,7 +142,7 @@ const navSections: NavSection[] = [
 ];
 
 const CREATE_OPTIONS = [
-  { label: "Simulation", desc: "In silico patient case study", href: "/brain/simulate", icon: (
+  { label: "Simulation", desc: "In silico patient case study", href: "/brain/simulate/new", icon: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 3h6v2H9zM12 5v3M5.5 8h13l-1.5 13H7z" />
     </svg>
