@@ -1,6 +1,8 @@
 "use client";
 
-import { Card, CardBody, Chip, Progress } from "@heroui/react";
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardBody, Chip, Progress, Textarea, Button, Slider, Tooltip } from "@heroui/react";
+import { useAuth } from "@/lib/auth-context";
 
 interface Advisor {
   initials: string;
@@ -65,12 +67,351 @@ const CASE_FINDINGS = [
   { label: "HbA1c", value: "6.8%" },
 ];
 
+const OPINIONS_STORAGE_KEY = "genomic-one-opinions";
+
+const VERDICT_OPTIONS = [
+  { key: "Concur", label: "Concur", color: "success" as const },
+  { key: "Concur with caveat", label: "Concur with Caveat", color: "warning" as const },
+  { key: "Modify recommendation", label: "Modify", color: "warning" as const },
+  { key: "Disagree", label: "Disagree", color: "danger" as const },
+];
+
+function getStoredOpinions(): Advisor[] {
+  try {
+    const raw = localStorage.getItem(OPINIONS_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // ignore
+  }
+  return [];
+}
+
+function saveOpinions(opinions: Advisor[]) {
+  try {
+    localStorage.setItem(OPINIONS_STORAGE_KEY, JSON.stringify(opinions));
+  } catch {
+    // ignore
+  }
+}
+
+function AdvisorCard({ advisor }: { advisor: Advisor }) {
+  return (
+    <Card
+      style={{
+        background: "var(--bg-surface)",
+        border: "1px solid var(--bg-border)",
+        borderRadius: 8,
+      }}
+    >
+      <CardBody className="p-5 space-y-4">
+        {/* Avatar + name */}
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+            style={{
+              background: `${advisor.avatarColor}20`,
+              color: advisor.avatarColor,
+              border: `1.5px solid ${advisor.avatarColor}40`,
+            }}
+          >
+            {advisor.initials}
+          </div>
+          <div>
+            <div
+              className="text-sm font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {advisor.name}
+            </div>
+            <div
+              className="text-[11px]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {advisor.role}, {advisor.location}
+            </div>
+          </div>
+        </div>
+
+        {/* Opinion */}
+        <div
+          className="rounded-lg px-3 py-2.5 text-xs leading-relaxed"
+          style={{
+            background: "var(--bg-elevated)",
+            border: "1px solid var(--bg-border)",
+            color: "var(--text-secondary)",
+          }}
+        >
+          {advisor.opinion}
+        </div>
+
+        {/* Verdict chip */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Chip
+            size="sm"
+            variant="flat"
+            color={advisor.verdictColor}
+            className="text-[10px]"
+          >
+            {advisor.verdict}
+          </Chip>
+        </div>
+
+        {/* Confidence bar */}
+        <div className="flex items-center gap-3">
+          <span
+            className="text-[10px] font-mono"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Confidence
+          </span>
+          <Progress
+            size="sm"
+            value={advisor.confidence}
+            maxValue={100}
+            classNames={{
+              indicator:
+                advisor.confidence >= 90
+                  ? "bg-green-500"
+                  : "bg-amber-500",
+              track: "bg-zinc-800",
+            }}
+            className="max-w-[100px]"
+            aria-label={`${advisor.name} confidence`}
+          />
+          <span
+            className="text-[10px] font-mono font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            {advisor.confidence}%
+          </span>
+        </div>
+
+        {/* Timestamp */}
+        <div
+          className="text-[10px] font-mono"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {advisor.timestamp}
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function AddOpinionSection({ onSubmit }: { onSubmit: (opinion: Advisor) => void }) {
+  const { user } = useAuth();
+  const [comment, setComment] = useState("");
+  const [verdict, setVerdict] = useState("");
+  const [confidence, setConfidence] = useState(80);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = () => {
+    if (!comment || !verdict || !user) return;
+    setSubmitting(true);
+
+    const verdictOption = VERDICT_OPTIONS.find((v) => v.key === verdict);
+    const now = new Date();
+    const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    const newOpinion: Advisor = {
+      initials: user.initials,
+      name: user.name,
+      role: user.role,
+      location: "Remote",
+      avatarColor: user.color,
+      opinion: comment,
+      verdict: verdict,
+      verdictColor: verdictOption?.color || "success",
+      confidence,
+      timestamp: ts,
+    };
+
+    setTimeout(() => {
+      onSubmit(newOpinion);
+      setComment("");
+      setVerdict("");
+      setConfidence(80);
+      setSubmitting(false);
+    }, 300);
+  };
+
+  return (
+    <div className="mb-6">
+      <h2
+        className="font-mono text-xs tracking-[0.15em] uppercase mb-3"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        Add Your Opinion
+      </h2>
+      <Card
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--bg-border)",
+          borderRadius: 8,
+        }}
+      >
+        <CardBody className="p-5 space-y-4">
+          {/* User info */}
+          <div className="flex items-center gap-3">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{
+                background: `${user!.color}20`,
+                color: user!.color,
+                border: `1.5px solid ${user!.color}40`,
+              }}
+            >
+              {user!.initials}
+            </div>
+            <div>
+              <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                {user!.name}
+              </div>
+              <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                {user!.role}
+              </div>
+            </div>
+          </div>
+
+          {/* Comment textarea */}
+          <Textarea
+            label="Your clinical opinion"
+            value={comment}
+            onValueChange={setComment}
+            variant="bordered"
+            minRows={3}
+            maxRows={6}
+            placeholder="Share your assessment of this case..."
+            classNames={{
+              inputWrapper: "border-[var(--bg-border)] bg-[var(--bg-elevated)] data-[hover=true]:border-[var(--accent-teal)]",
+              label: "text-[var(--text-muted)]",
+              input: "text-[var(--text-primary)]",
+            }}
+          />
+
+          {/* Voice input button */}
+          <div className="flex items-center gap-3">
+            <Tooltip content="Voice input coming soon" placement="top">
+              <Button
+                isIconOnly
+                variant="bordered"
+                size="sm"
+                className="border-[var(--bg-border)]"
+                style={{ color: "var(--text-muted)" }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                  <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+              </Button>
+            </Tooltip>
+            <span className="text-[10px] font-mono" style={{ color: "var(--text-muted)" }}>
+              Voice input
+            </span>
+          </div>
+
+          {/* Verdict selection */}
+          <div>
+            <span
+              className="text-[10px] font-mono uppercase tracking-wider block mb-2"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Verdict
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {VERDICT_OPTIONS.map((v) => (
+                <Chip
+                  key={v.key}
+                  size="sm"
+                  variant={verdict === v.key ? "solid" : "bordered"}
+                  color={v.color}
+                  className="cursor-pointer text-[11px]"
+                  onClick={() => setVerdict(v.key)}
+                >
+                  {v.label}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          {/* Confidence slider */}
+          <div>
+            <span
+              className="text-[10px] font-mono uppercase tracking-wider block mb-2"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Confidence: {confidence}%
+            </span>
+            <Slider
+              size="sm"
+              step={1}
+              minValue={0}
+              maxValue={100}
+              value={confidence}
+              onChange={(val) => setConfidence(typeof val === "number" ? val : val[0])}
+              classNames={{
+                track: "bg-zinc-800",
+                filler: "bg-[var(--accent-teal)]",
+                thumb: "bg-[var(--accent-teal)]",
+              }}
+              aria-label="Confidence level"
+            />
+          </div>
+
+          {/* Submit */}
+          <div className="flex justify-end">
+            <Button
+              onPress={handleSubmit}
+              isLoading={submitting}
+              isDisabled={!comment || !verdict}
+              className="font-mono text-xs font-semibold"
+              style={{
+                background: "var(--accent-teal)",
+                color: "#090E1A",
+              }}
+            >
+              Submit Opinion
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
 export default function AdvisoryPage() {
-  const concurCount = 2;
-  const modifyCount = 1;
-  const total = concurCount + modifyCount;
-  const concurPercent = Math.round((concurCount / total) * 100);
-  const modifyPercent = 100 - concurPercent;
+  const { isAuthenticated } = useAuth();
+  const [userOpinions, setUserOpinions] = useState<Advisor[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setUserOpinions(getStoredOpinions());
+  }, []);
+
+  const handleNewOpinion = useCallback((opinion: Advisor) => {
+    setUserOpinions((prev) => {
+      const updated = [opinion, ...prev];
+      saveOpinions(updated);
+      return updated;
+    });
+  }, []);
+
+  const allAdvisors = [...userOpinions, ...ADVISORS];
+  const concurCount = allAdvisors.filter(
+    (a) => a.verdict === "Concur" || a.verdict === "Concur with caveat"
+  ).length;
+  const modifyCount = allAdvisors.filter(
+    (a) => a.verdict === "Modify recommendation"
+  ).length;
+  const disagreeCount = allAdvisors.filter(
+    (a) => a.verdict === "Disagree"
+  ).length;
+  const total = allAdvisors.length;
+  const concurPercent = total > 0 ? Math.round((concurCount / total) * 100) : 0;
+  const otherPercent = 100 - concurPercent;
 
   return (
     <div className="p-6 sm:p-10">
@@ -342,111 +683,12 @@ export default function AdvisoryPage() {
             color="secondary"
             className="text-[10px] tracking-wider uppercase"
           >
-            {ADVISORS.length} Advisors
+            {allAdvisors.length} Advisors
           </Chip>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {ADVISORS.map((advisor) => (
-            <Card
-              key={advisor.initials}
-              style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--bg-border)",
-                borderRadius: 8,
-              }}
-            >
-              <CardBody className="p-5 space-y-4">
-                {/* Avatar + name */}
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                    style={{
-                      background: `${advisor.avatarColor}20`,
-                      color: advisor.avatarColor,
-                      border: `1.5px solid ${advisor.avatarColor}40`,
-                    }}
-                  >
-                    {advisor.initials}
-                  </div>
-                  <div>
-                    <div
-                      className="text-sm font-semibold"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      {advisor.name}
-                    </div>
-                    <div
-                      className="text-[11px]"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {advisor.role}, {advisor.location}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Opinion */}
-                <div
-                  className="rounded-lg px-3 py-2.5 text-xs leading-relaxed"
-                  style={{
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--bg-border)",
-                    color: "var(--text-secondary)",
-                  }}
-                >
-                  {advisor.opinion}
-                </div>
-
-                {/* Verdict chip */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Chip
-                    size="sm"
-                    variant="flat"
-                    color={advisor.verdictColor}
-                    className="text-[10px]"
-                  >
-                    {advisor.verdict}
-                  </Chip>
-                </div>
-
-                {/* Confidence bar */}
-                <div className="flex items-center gap-3">
-                  <span
-                    className="text-[10px] font-mono"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Confidence
-                  </span>
-                  <Progress
-                    size="sm"
-                    value={advisor.confidence}
-                    maxValue={100}
-                    classNames={{
-                      indicator:
-                        advisor.confidence >= 90
-                          ? "bg-green-500"
-                          : "bg-amber-500",
-                      track: "bg-zinc-800",
-                    }}
-                    className="max-w-[100px]"
-                    aria-label={`${advisor.name} confidence`}
-                  />
-                  <span
-                    className="text-[10px] font-mono font-semibold"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {advisor.confidence}%
-                  </span>
-                </div>
-
-                {/* Timestamp */}
-                <div
-                  className="text-[10px] font-mono"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  {advisor.timestamp}
-                </div>
-              </CardBody>
-            </Card>
+          {allAdvisors.map((advisor, i) => (
+            <AdvisorCard key={`${advisor.initials}-${i}`} advisor={advisor} />
           ))}
         </div>
       </div>
@@ -480,7 +722,9 @@ export default function AdvisoryPage() {
                   className="text-sm font-semibold"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  {concurCount}/{total} Concur, {modifyCount}/{total} Modify
+                  {concurCount}/{total} Concur
+                  {modifyCount > 0 && <>, {modifyCount}/{total} Modify</>}
+                  {disagreeCount > 0 && <>, {disagreeCount}/{total} Disagree</>}
                 </span>
               </div>
               <Chip
@@ -515,7 +759,7 @@ export default function AdvisoryPage() {
                 <div
                   className="h-full rounded-r-full"
                   style={{
-                    width: `${modifyPercent}%`,
+                    width: `${otherPercent}%`,
                     background: "#f59e0b",
                   }}
                 />
@@ -531,7 +775,7 @@ export default function AdvisoryPage() {
                   className="text-[10px] font-mono"
                   style={{ color: "#f59e0b" }}
                 >
-                  {modifyPercent}% Modify
+                  {otherPercent}% Other
                 </span>
               </div>
             </div>
@@ -607,6 +851,11 @@ export default function AdvisoryPage() {
           </CardBody>
         </Card>
       </div>
+
+      {/* Add Your Opinion — only when authenticated */}
+      {mounted && isAuthenticated && (
+        <AddOpinionSection onSubmit={handleNewOpinion} />
+      )}
 
       {/* Footer */}
       <div className="text-center mt-8">

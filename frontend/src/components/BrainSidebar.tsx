@@ -7,6 +7,7 @@ import { Button, Tooltip } from "@heroui/react";
 import { Squash as Hamburger } from "hamburger-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DnaLogo from "@/components/DnaLogo";
+import { useAuth } from "@/lib/auth-context";
 
 const STORAGE_KEY = "brain-sidebar-collapsed";
 
@@ -225,6 +226,70 @@ function CreateButton({ collapsed, onNavigate }: { collapsed: boolean; onNavigat
   );
 }
 
+function SidebarUserInfo({ collapsed, isMobile }: { collapsed: boolean; isMobile: boolean }) {
+  const { user, isAuthenticated } = useAuth();
+
+  if (collapsed && !isMobile) {
+    if (!isAuthenticated || !user) return null;
+    return (
+      <Tooltip content={user.name} placement="right">
+        <div className="flex justify-center py-3 border-t border-border">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
+            style={{
+              background: `${user.color}20`,
+              color: user.color,
+              border: `1.5px solid ${user.color}40`,
+            }}
+          >
+            {user.initials}
+          </div>
+        </div>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <div className="mt-auto border-t border-border px-3 py-3">
+      {isAuthenticated && user ? (
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+            style={{
+              background: `${user.color}20`,
+              color: user.color,
+              border: `1.5px solid ${user.color}40`,
+            }}
+          >
+            {user.initials}
+          </div>
+          <div className="min-w-0">
+            <div className="text-xs font-semibold truncate" style={{ color: "var(--text-primary)" }}>
+              {user.name}
+            </div>
+            <div className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>
+              {user.role}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <Link
+          href="/auth/login"
+          className="flex items-center gap-2 text-xs font-medium transition-colors hover:text-zinc-200"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+          Sign In
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function BrainSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -380,6 +445,7 @@ export default function BrainSidebar() {
         </div>
 
         {navContent(false)}
+        <SidebarUserInfo collapsed={collapsed} isMobile={false} />
       </motion.aside>
 
       {/* Mobile hamburger button — fixed top-left */}
@@ -419,6 +485,7 @@ export default function BrainSidebar() {
                 <span className="font-mono text-base font-bold" style={{ color: 'var(--text-primary)' }}>GENOMIC ONE</span>
               </div>
               {navContent(true)}
+              <SidebarUserInfo collapsed={false} isMobile={true} />
             </motion.aside>
           </>
         )}
