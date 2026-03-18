@@ -1,130 +1,76 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardBody, Chip, Progress } from "@heroui/react";
 
-interface Recommendation {
-  title: string;
-  risk: "low" | "monitor" | "action";
-  details: Record<string, string>;
-  recommendation: string;
-  safla: {
-    status: "validated" | "warning";
-    auditId: string;
-    confidence: number;
-    note?: string;
-  };
-  evidence: string[];
+interface Advisor {
+  initials: string;
+  name: string;
+  role: string;
+  location: string;
+  avatarColor: string;
+  opinion: string;
+  verdict: string;
+  verdictColor: "success" | "warning" | "danger";
+  confidence: number;
+  timestamp: string;
 }
 
-const RISK_CONFIG: Record<
-  "low" | "monitor" | "action",
-  { label: string; color: "success" | "warning" | "danger"; border: string }
-> = {
-  low: { label: "Low Risk", color: "success", border: "safla" },
-  monitor: { label: "Monitor", color: "warning", border: "warning" },
-  action: { label: "Action Required", color: "danger", border: "flagged" },
-};
-
-const recommendations: Recommendation[] = [
+const ADVISORS: Advisor[] = [
   {
-    title: "Semaglutide Dosing \u2014 CYP2D6 Intermediate Metabolizer",
-    risk: "low",
-    details: {
-      Drug: "Semaglutide (Ozempic/Wegovy)",
-      Gene: "CYP2D6 *1/*4",
-    },
-    recommendation:
-      "Standard dosing appropriate. Monitor plasma concentration at initiation.",
-    safla: {
-      status: "validated",
-      auditId: "ISC-2026-03-17-CYP2D6-001",
-      confidence: 94.2,
-    },
-    evidence: ["PharmGKB Level 2A", "CPIC Level A"],
+    initials: "SC",
+    name: "Dr. Sarah Chen",
+    role: "Clinical Pharmacologist",
+    location: "Copenhagen",
+    avatarColor: "#00C9B1",
+    opinion:
+      "Agree with AI assessment. Standard semaglutide dosing is appropriate for CYP2D6 *1/*4. Recommend monitoring HbA1c at 3-month intervals and adjusting titration if GI adverse effects exceed Grade 2.",
+    verdict: "Concur",
+    verdictColor: "success",
+    confidence: 92,
+    timestamp: "2026-03-17 09:15",
   },
   {
-    title: "HBB Variant Monitoring \u2014 Sickle Cell Carrier",
-    risk: "monitor",
-    details: {
-      Gene: "HBB E6V",
-      Variant: "rs334",
-    },
-    recommendation:
-      "Carrier status confirmed. No immediate intervention. Genetic counselling recommended.",
-    safla: {
-      status: "warning",
-      auditId: "ISC-2026-03-17-HBB-002",
-      confidence: 87.0,
-      note: "Population coverage",
-    },
-    evidence: ["ClinVar Pathogenic", "ACMG Category 4"],
+    initials: "JO",
+    name: "Dr. James Okafor",
+    role: "Genetic Counselor",
+    location: "Princeton",
+    avatarColor: "#3D8EFF",
+    opinion:
+      "Note that CYP2D6 *1/*4 intermediate metabolizer status may affect co-prescribed medications. Recommend reviewing full medication list before initiating semaglutide. No pharmacogenomic contraindication to GLP-1 RA therapy.",
+    verdict: "Concur with caveat",
+    verdictColor: "warning",
+    confidence: 88,
+    timestamp: "2026-03-17 10:30",
   },
   {
-    title: "BRCA1 Cancer Screening Schedule",
-    risk: "action",
-    details: {
-      Gene: "BRCA1 185delAG",
-      Category: "Hereditary Cancer",
-    },
-    recommendation:
-      "Enhanced screening protocol recommended from age 30. Consider MRI + mammography annually.",
-    safla: {
-      status: "validated",
-      auditId: "ISC-2026-03-17-BRCA1-003",
-      confidence: 91.0,
-    },
-    evidence: ["NCCN Guidelines", "ACMG SF v3.1"],
-  },
-  {
-    title: "T2D Prevention \u2014 GLP-1 RA Consideration",
-    risk: "monitor",
-    details: {
-      Gene: "INS locus",
-      Indication: "T2D risk 38% at 10yr",
-    },
-    recommendation:
-      "Lifestyle intervention recommended. GLP-1 RA initiation at age 55 per trajectory model.",
-    safla: {
-      status: "validated",
-      auditId: "ISC-2026-03-17-INS-004",
-      confidence: 76.0,
-    },
-    evidence: ["ADA Standards 2026", "Epigenetic Age Model"],
+    initials: "PS",
+    name: "Dr. Priya Sharma",
+    role: "Endocrinologist",
+    location: "Bangalore",
+    avatarColor: "#F0B429",
+    opinion:
+      "T2D 10yr risk of 38% warrants earlier intervention than age 55. Recommend lifestyle modification program with GLP-1 RA initiation at current age given BMI 28.5 and HbA1c 6.8%. The epigenetic age of 27.9yr suggests favorable biological baseline.",
+    verdict: "Modify recommendation",
+    verdictColor: "warning",
+    confidence: 95,
+    timestamp: "2026-03-17 11:45",
   },
 ];
 
-const REASONING_STEPS = [
-  {
-    step: 1,
-    label: "Genomic Input Layer",
-    detail: "Variant calling, star allele mapping, structural annotation",
-  },
-  {
-    step: 2,
-    label: "Evidence Integration",
-    detail: "PharmGKB, ClinVar, CPIC guideline cross-reference",
-  },
-  {
-    step: 3,
-    label: "Phenotype Classification",
-    detail: "Activity score computation, metabolizer status assignment",
-  },
-  {
-    step: 4,
-    label: "Clinical Decision Engine",
-    detail: "Drug-gene interaction analysis, dose adjustment calculation",
-  },
-  {
-    step: 5,
-    label: "SAFLA Validation",
-    detail:
-      "Confidence threshold check, contraindication scan, population coverage audit",
-  },
+const CASE_FINDINGS = [
+  { label: "Drug", value: "Semaglutide standard dosing" },
+  { label: "T2D 10yr Risk", value: "38%" },
+  { label: "Epigenetic Age", value: "27.9yr" },
+  { label: "BMI", value: "28.5" },
+  { label: "HbA1c", value: "6.8%" },
 ];
 
 export default function AdvisoryPage() {
-  const [reasoningOpen, setReasoningOpen] = useState(false);
+  const concurCount = 2;
+  const modifyCount = 1;
+  const total = concurCount + modifyCount;
+  const concurPercent = Math.round((concurCount / total) * 100);
+  const modifyPercent = 100 - concurPercent;
 
   return (
     <div className="p-6 sm:p-10">
@@ -134,11 +80,11 @@ export default function AdvisoryPage() {
         className="text-2xl font-bold tracking-tight mb-1"
         style={{ color: "var(--text-primary)" }}
       >
-        SAFLA-Validated Clinical Recommendations
+        Clinical Case Conference
       </h1>
       <p className="text-sm mb-1" style={{ color: "var(--text-secondary)" }}>
-        Synthesized intelligence from genomic, pharmacogenomic, and epigenetic
-        analysis layers.
+        Multi-disciplinary review of in silico case studies — AI and human
+        intelligence converging on clinical decisions
       </p>
       <div className="mb-8">
         <span
@@ -149,133 +95,317 @@ export default function AdvisoryPage() {
         </span>
       </div>
 
-      {/* Active Recommendations */}
-      <div className="flex items-center gap-3 mb-1">
+      {/* Case Under Review */}
+      <div className="mb-6">
         <h2
-          className="font-mono text-xs tracking-[0.15em] uppercase"
+          className="font-mono text-xs tracking-[0.15em] uppercase mb-3"
           style={{ color: "var(--text-secondary)" }}
         >
-          Active Recommendations
+          Case Under Review
         </h2>
-        <Chip
-          size="sm"
-          variant="flat"
-          color="success"
-          className="text-[10px] tracking-wider uppercase"
+        <Card
+          className="panel-card safla"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--bg-border)",
+          }}
         >
-          {recommendations.length} Active
-        </Chip>
-      </div>
-      <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-        All recommendations validated through the 5-layer intelligence pipeline
-      </p>
+          <CardBody className="p-5 space-y-4">
+            <div className="flex items-start justify-between gap-2 flex-wrap">
+              <div>
+                <span
+                  className="text-[10px] font-mono uppercase tracking-wider block mb-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Case ID
+                </span>
+                <span
+                  className="font-mono text-sm font-semibold"
+                  style={{ color: "var(--accent-teal)" }}
+                >
+                  ISC-2026-03-17-001
+                </span>
+              </div>
+              <Chip
+                size="sm"
+                variant="flat"
+                color="warning"
+                className="text-[10px] tracking-wider uppercase"
+              >
+                Under Review
+              </Chip>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {recommendations.map((rec, i) => {
-          const cfg = RISK_CONFIG[rec.risk];
-          return (
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              <div>
+                <span
+                  className="text-[10px] font-mono uppercase tracking-wider block"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Patient
+                </span>
+                <span
+                  className="text-sm"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  52yr Male, European
+                </span>
+              </div>
+              <div>
+                <span
+                  className="text-[10px] font-mono uppercase tracking-wider block"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Genotype
+                </span>
+                <span
+                  className="text-sm font-mono"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  CYP2D6 *1/*4 — Intermediate Metabolizer
+                </span>
+              </div>
+              <div>
+                <span
+                  className="text-[10px] font-mono uppercase tracking-wider block"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Indication
+                </span>
+                <span
+                  className="text-sm"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Type 2 Diabetes
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <span
+                className="text-[10px] font-mono uppercase tracking-wider block mb-2"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Key Findings
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {CASE_FINDINGS.map((f) => (
+                  <div
+                    key={f.label}
+                    className="text-xs px-2.5 py-1 rounded"
+                    style={{
+                      background: "var(--bg-elevated)",
+                      border: "1px solid var(--bg-border)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    <span style={{ color: "var(--text-muted)" }}>
+                      {f.label}:{" "}
+                    </span>
+                    <span className="font-mono">{f.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* AI Recommendation */}
+      <div className="mb-6">
+        <h2
+          className="font-mono text-xs tracking-[0.15em] uppercase mb-3"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          AI Recommendation
+        </h2>
+        <Card
+          className="panel-card neural"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--bg-border)",
+          }}
+        >
+          <CardBody className="p-5 space-y-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Chip
+                size="sm"
+                variant="flat"
+                color="primary"
+                className="text-[10px] tracking-wider uppercase"
+              >
+                AI Advisory
+              </Chip>
+            </div>
+
+            <div
+              className="rounded-lg px-4 py-3 text-xs leading-relaxed"
+              style={{
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--bg-border)",
+                color: "var(--text-primary)",
+              }}
+            >
+              <p className="mb-2">
+                Standard semaglutide dosing is appropriate for CYP2D6 *1/*4
+                intermediate metabolizer status. Semaglutide is primarily
+                degraded via proteolysis and is not significantly metabolized by
+                CYP enzymes, reducing pharmacogenomic interaction risk.
+              </p>
+              <p className="mb-2">
+                Recommend initiation at 0.25mg weekly with standard titration
+                schedule. Monitor plasma glucose, HbA1c, and GI tolerability at
+                4-week intervals during dose escalation.
+              </p>
+              <p>
+                GLP-1 RA consideration for T2D prevention at age 55 per
+                trajectory model, with lifestyle modification commencing
+                immediately given 38% 10-year risk.
+              </p>
+            </div>
+
+            {/* SAFLA validation badge */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <span style={{ color: "var(--safla-green)" }}>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <polyline points="9 12 12 15 16 10" />
+                  </svg>
+                </span>
+                <Chip
+                  size="sm"
+                  variant="flat"
+                  color="success"
+                  className="text-[10px]"
+                >
+                  SAFLA Validated
+                </Chip>
+              </div>
+              <span
+                className="text-[10px] font-mono"
+                style={{ color: "var(--text-muted)" }}
+              >
+                ISC-2026-03-17-CYP2D6-001
+              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[10px] font-mono"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Confidence
+                </span>
+                <Progress
+                  size="sm"
+                  value={94.2}
+                  maxValue={100}
+                  classNames={{
+                    indicator: "bg-green-500",
+                    track: "bg-zinc-800",
+                  }}
+                  className="max-w-[100px]"
+                  aria-label="AI Confidence"
+                />
+                <span
+                  className="text-[10px] font-mono font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  94.2%
+                </span>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* Expert Opinions */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-3">
+          <h2
+            className="font-mono text-xs tracking-[0.15em] uppercase"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Expert Opinions
+          </h2>
+          <Chip
+            size="sm"
+            variant="flat"
+            color="secondary"
+            className="text-[10px] tracking-wider uppercase"
+          >
+            {ADVISORS.length} Advisors
+          </Chip>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {ADVISORS.map((advisor) => (
             <Card
-              key={i}
-              className={`panel-card ${cfg.border}`}
+              key={advisor.initials}
               style={{
                 background: "var(--bg-surface)",
                 border: "1px solid var(--bg-border)",
+                borderRadius: 8,
               }}
             >
               <CardBody className="p-5 space-y-4">
-                {/* Title + Risk */}
-                <div className="flex items-start justify-between gap-2">
-                  <h3
-                    className="text-sm font-semibold leading-snug"
-                    style={{ color: "var(--text-primary)" }}
+                {/* Avatar + name */}
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                    style={{
+                      background: `${advisor.avatarColor}20`,
+                      color: advisor.avatarColor,
+                      border: `1.5px solid ${advisor.avatarColor}40`,
+                    }}
                   >
-                    {rec.title}
-                  </h3>
-                  <Chip
-                    size="sm"
-                    variant="flat"
-                    color={cfg.color}
-                    className="flex-shrink-0"
-                  >
-                    {cfg.label}
-                  </Chip>
-                </div>
-
-                {/* Details */}
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(rec.details).map(([key, value]) => (
+                    {advisor.initials}
+                  </div>
+                  <div>
                     <div
-                      key={key}
-                      className="text-xs px-2.5 py-1 rounded"
-                      style={{
-                        background: "var(--bg-elevated)",
-                        border: "1px solid var(--bg-border)",
-                        color: "var(--text-secondary)",
-                      }}
+                      className="text-sm font-semibold"
+                      style={{ color: "var(--text-primary)" }}
                     >
-                      <span style={{ color: "var(--text-muted)" }}>
-                        {key}:{" "}
-                      </span>
-                      <span className="font-mono">{value}</span>
+                      {advisor.name}
                     </div>
-                  ))}
+                    <div
+                      className="text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      {advisor.role}, {advisor.location}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Recommendation text */}
+                {/* Opinion */}
                 <div
-                  className="rounded-lg px-4 py-3 text-xs leading-relaxed"
+                  className="rounded-lg px-3 py-2.5 text-xs leading-relaxed"
                   style={{
                     background: "var(--bg-elevated)",
                     border: "1px solid var(--bg-border)",
-                    color: "var(--text-primary)",
+                    color: "var(--text-secondary)",
                   }}
                 >
-                  <span
-                    className="block text-[10px] uppercase tracking-wider font-mono mb-1"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Recommendation
-                  </span>
-                  {rec.recommendation}
+                  {advisor.opinion}
                 </div>
 
-                {/* SAFLA badge */}
+                {/* Verdict chip */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5">
-                    <span style={{ color: "var(--safla-green)" }}>
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        <polyline points="9 12 12 15 16 10" />
-                      </svg>
-                    </span>
-                    <Chip
-                      size="sm"
-                      variant="flat"
-                      color={
-                        rec.safla.status === "validated" ? "success" : "warning"
-                      }
-                      className="text-[10px]"
-                    >
-                      {rec.safla.status === "validated"
-                        ? "SAFLA Validated"
-                        : "Validated with Warning"}
-                    </Chip>
-                  </div>
-                  <span
-                    className="text-[10px] font-mono"
-                    style={{ color: "var(--text-muted)" }}
+                  <Chip
+                    size="sm"
+                    variant="flat"
+                    color={advisor.verdictColor}
+                    className="text-[10px]"
                   >
-                    {rec.safla.auditId}
-                  </span>
+                    {advisor.verdict}
+                  </Chip>
                 </div>
 
                 {/* Confidence bar */}
@@ -288,160 +418,194 @@ export default function AdvisoryPage() {
                   </span>
                   <Progress
                     size="sm"
-                    value={rec.safla.confidence}
+                    value={advisor.confidence}
                     maxValue={100}
                     classNames={{
                       indicator:
-                        rec.safla.confidence >= 85
+                        advisor.confidence >= 90
                           ? "bg-green-500"
                           : "bg-amber-500",
                       track: "bg-zinc-800",
                     }}
-                    className="max-w-[120px]"
-                    aria-label="Confidence"
+                    className="max-w-[100px]"
+                    aria-label={`${advisor.name} confidence`}
                   />
                   <span
                     className="text-[10px] font-mono font-semibold"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {rec.safla.confidence.toFixed(1)}%
+                    {advisor.confidence}%
                   </span>
                 </div>
 
-                {/* Evidence chips */}
-                <div className="flex flex-wrap gap-1.5">
-                  {rec.evidence.map((ev) => (
-                    <Chip
-                      key={ev}
-                      size="sm"
-                      variant="bordered"
-                      className="text-[10px]"
-                    >
-                      {ev}
-                    </Chip>
-                  ))}
+                {/* Timestamp */}
+                <div
+                  className="text-[10px] font-mono"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  {advisor.timestamp}
                 </div>
-
-                {rec.safla.note && (
-                  <div
-                    className="text-[10px] flex items-center gap-1"
-                    style={{ color: "var(--accent-gold)" }}
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                      <line x1="12" y1="9" x2="12" y2="13" />
-                      <line x1="12" y1="17" x2="12.01" y2="17" />
-                    </svg>
-                    Warning: {rec.safla.note}
-                  </div>
-                )}
               </CardBody>
             </Card>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
-      {/* Reasoning Chain */}
-      <div className="mt-10">
-        <button
-          onClick={() => setReasoningOpen(!reasoningOpen)}
-          className="w-full flex items-center justify-between rounded-xl px-5 py-4 transition-colors duration-150"
+      {/* Consensus Panel */}
+      <div className="mb-6">
+        <h2
+          className="font-mono text-xs tracking-[0.15em] uppercase mb-3"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Consensus Panel
+        </h2>
+        <Card
+          className="panel-card genomic"
           style={{
             background: "var(--bg-surface)",
             border: "1px solid var(--bg-border)",
           }}
         >
-          <div className="flex items-center gap-2">
-            <span
-              className="text-sm font-semibold"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Computational Reasoning Chain
-            </span>
-            <Chip
-              size="sm"
-              variant="flat"
-              color="secondary"
-              className="text-[10px]"
-            >
-              5-layer intelligence pipeline
-            </Chip>
-          </div>
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{
-              color: "var(--text-muted)",
-              transform: reasoningOpen ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-
-        {reasoningOpen && (
-          <div
-            className="rounded-b-xl px-5 py-4 space-y-3 -mt-px"
-            style={{
-              background: "var(--bg-surface)",
-              border: "1px solid var(--bg-border)",
-              borderTop: "none",
-            }}
-          >
-            {REASONING_STEPS.map((rs) => (
-              <div key={rs.step} className="flex items-start gap-3">
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
-                  style={{
-                    background: "rgba(0,201,177,0.15)",
-                    color: "var(--accent-teal)",
-                  }}
+          <CardBody className="p-5 space-y-5">
+            {/* Consensus indicator */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <span
+                  className="text-[10px] font-mono uppercase tracking-wider block mb-1"
+                  style={{ color: "var(--text-muted)" }}
                 >
-                  {rs.step}
-                </div>
-                <div>
-                  <div
-                    className="text-sm font-medium"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {rs.label}
-                  </div>
-                  <div
-                    className="text-xs"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    {rs.detail}
-                  </div>
-                </div>
+                  Consensus
+                </span>
+                <span
+                  className="text-sm font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {concurCount}/{total} Concur, {modifyCount}/{total} Modify
+                </span>
               </div>
-            ))}
+              <Chip
+                size="sm"
+                variant="flat"
+                color="success"
+                className="text-[10px] tracking-wider uppercase"
+              >
+                Advisory Complete
+              </Chip>
+            </div>
+
+            {/* Visual alignment bar */}
+            <div>
+              <span
+                className="text-[10px] font-mono uppercase tracking-wider block mb-2"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Alignment
+              </span>
+              <div
+                className="w-full h-3 rounded-full overflow-hidden flex"
+                style={{ background: "var(--bg-elevated)" }}
+              >
+                <div
+                  className="h-full rounded-l-full"
+                  style={{
+                    width: `${concurPercent}%`,
+                    background: "#22c55e",
+                  }}
+                />
+                <div
+                  className="h-full rounded-r-full"
+                  style={{
+                    width: `${modifyPercent}%`,
+                    background: "#f59e0b",
+                  }}
+                />
+              </div>
+              <div className="flex justify-between mt-1">
+                <span
+                  className="text-[10px] font-mono"
+                  style={{ color: "#22c55e" }}
+                >
+                  {concurPercent}% Concur
+                </span>
+                <span
+                  className="text-[10px] font-mono"
+                  style={{ color: "#f59e0b" }}
+                >
+                  {modifyPercent}% Modify
+                </span>
+              </div>
+            </div>
+
+            {/* AI-Human alignment */}
+            <div>
+              <span
+                className="text-[10px] font-mono uppercase tracking-wider block mb-1"
+                style={{ color: "var(--text-muted)" }}
+              >
+                AI-Human Alignment
+              </span>
+              <span
+                className="text-sm"
+                style={{ color: "var(--text-primary)" }}
+              >
+                High — AI recommendation supported by majority
+              </span>
+            </div>
+
+            {/* Final advisory */}
             <div
-              className="text-[10px] mt-2 pt-2"
+              className="rounded-lg px-4 py-3 text-xs leading-relaxed"
               style={{
-                color: "var(--text-muted)",
-                borderTop: "1px solid var(--bg-border)",
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--bg-border)",
+                color: "var(--text-primary)",
               }}
             >
-              Full reasoning chain \u2014 5-layer intelligence pipeline
+              <span
+                className="block text-[10px] uppercase tracking-wider font-mono mb-1"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Final Advisory
+              </span>
+              Proceed with semaglutide initiation. Incorporate Dr.
+              Sharma&apos;s recommendation for earlier GLP-1 RA start. Review
+              co-medications per Dr. Okafor&apos;s note.
             </div>
-          </div>
-        )}
+
+            {/* SAFLA re-validation */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span style={{ color: "var(--safla-green)" }}>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <polyline points="9 12 12 15 16 10" />
+                </svg>
+              </span>
+              <Chip
+                size="sm"
+                variant="flat"
+                color="success"
+                className="text-[10px]"
+              >
+                SAFLA Re-Validated
+              </Chip>
+              <span
+                className="text-[10px] font-mono"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Passed with expert consensus
+              </span>
+            </div>
+          </CardBody>
+        </Card>
       </div>
 
       {/* Footer */}
@@ -450,7 +614,7 @@ export default function AdvisoryPage() {
           className="text-[10px] font-mono uppercase tracking-wider"
           style={{ color: "var(--text-muted)" }}
         >
-          Simulated Data \u00b7 In Silico Environment
+          Simulated Data &middot; In Silico Environment
         </span>
       </div>
     </div>
