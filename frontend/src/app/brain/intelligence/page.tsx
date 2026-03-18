@@ -1,8 +1,14 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, Tab, Card, CardBody, Chip } from "@heroui/react";
+
+const BrainGraph3D = dynamic(() => import("@/components/BrainGraph3D"), {
+  ssr: false,
+  loading: () => <div className="h-[400px] rounded-lg animate-pulse" style={{ background: 'var(--bg-elevated)' }} />,
+});
 
 const LAYERS = [
   {
@@ -110,6 +116,16 @@ function IntelligenceContent() {
         <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>
           Each layer builds on the ones below it, creating progressively more sophisticated genomic understanding.
         </p>
+      </div>
+
+      <div className="panel-card neural mb-8">
+        <span className="panel-label">Neural Intelligence Graph</span>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+          Real-time visualization of the 7-layer intelligence system
+        </p>
+        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+          <BrainGraph3D />
+        </div>
       </div>
 
       <Tabs
