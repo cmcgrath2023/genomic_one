@@ -1,6 +1,6 @@
 import * as staticData from "./static-data";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 async function fetchEndpoint<T>(path: string, fallback: T): Promise<T> {
   if (typeof window === "undefined") return fallback;

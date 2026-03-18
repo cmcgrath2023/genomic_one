@@ -1,9 +1,17 @@
 //! Axum HTTP API server exposing genomic analysis endpoints as JSON.
 
-use axum::{routing::get, Json, Router};
+use axum::{
+    response::sse::{Event, KeepAlive, Sse},
+    routing::get,
+    Json, Router,
+};
+use futures_util::stream::Stream;
 use rand::Rng;
 use serde::Serialize;
+use std::convert::Infallible;
 use std::net::SocketAddr;
+use std::time::Duration;
+use tokio_stream::wrappers::ReceiverStream;
 use tower_http::cors::{Any, CorsLayer};
 
 use rvdna::prelude::*;
@@ -685,6 +693,283 @@ async fn pathways_handler() -> Json<PathwaysResponse> {
 }
 
 // ---------------------------------------------------------------------------
+// SSE streaming handler
+// ---------------------------------------------------------------------------
+
+async fn stream_analysis_handler() -> Sse<impl Stream<Item = std::result::Result<Event, Infallible>>> {
+    let (tx, rx) = tokio::sync::mpsc::channel::<std::result::Result<Event, Infallible>>(32);
+
+    tokio::spawn(async move {
+        let start = std::time::Instant::now();
+
+        // Helper to send an SSE event; returns false if the receiver is gone.
+        macro_rules! send_event {
+            ($json:expr) => {
+                if tx
+                    .send(Ok(Event::default()
+                        .event("analysis")
+                        .data(serde_json::to_string(&$json).unwrap())))
+                    .await
+                    .is_err()
+                {
+                    return; // client disconnected
+                }
+                tokio::time::sleep(Duration::from_millis(200)).await;
+            };
+        }
+
+        // Stage 1: Gene Loading
+        let panel = match tokio::task::spawn_blocking(|| GenePanel::load()).await {
+            Ok(Ok(p)) => p,
+            _ => return,
+        };
+        let total_bases = panel.total_bases();
+        send_event!(serde_json::json!({
+            "stage": "gene_loading",
+            "gene": "panel",
+            "status": "complete",
+            "progress": 10,
+            "data": { "genes": 5, "total_bases": total_bases }
+        }));
+
+        // Stage 2: K-mer Analysis (one event per gene)
+        // We need owned sequences for spawn_blocking
+        let hbb_clone = panel.hbb.to_string();
+        let tp53_clone = panel.tp53.to_string();
+        let brca1_clone = panel.brca1.to_string();
+        let cyp2d6_clone = panel.cyp2d6.to_string();
+        let ins_clone = panel.insulin.to_string();
+
+        let gene_seqs: Vec<(String, String, u32)> = vec![
+            ("HBB".into(), hbb_clone.clone(), 20),
+            ("TP53".into(), tp53_clone.clone(), 30),
+            ("BRCA1".into(), brca1_clone.clone(), 35),
+            ("CYP2D6".into(), cyp2d6_clone.clone(), 40),
+            ("INS".into(), ins_clone.clone(), 45),
+        ];
+
+        let mut kmer_vecs: Vec<(String, Vec<f32>)> = Vec::new();
+        for (name, seq, progress) in gene_seqs {
+            let seq_owned = seq.clone();
+            let vec_result = tokio::task::spawn_blocking(move || {
+                let dna = DnaSequence::from_str(&seq_owned).expect("parse dna");
+                dna.to_kmer_vector(11, 512).expect("kmer vector")
+            })
+            .await;
+
+            match vec_result {
+                Ok(v) => {
+                    send_event!(serde_json::json!({
+                        "stage": "kmer",
+                        "gene": name,
+                        "status": "complete",
+                        "progress": progress,
+                        "data": { "dimensions": 512 }
+                    }));
+                    kmer_vecs.push((name, v));
+                }
+                Err(_) => return,
+            }
+        }
+
+        // Similarity matrix
+        let mut pairs = Vec::new();
+        for i in 0..kmer_vecs.len() {
+            for j in (i + 1)..kmer_vecs.len() {
+                let sim = cosine_similarity(&kmer_vecs[i].1, &kmer_vecs[j].1);
+                pairs.push(serde_json::json!({
+                    "gene_a": kmer_vecs[i].0,
+                    "gene_b": kmer_vecs[j].0,
+                    "similarity": sim
+                }));
+            }
+        }
+        send_event!(serde_json::json!({
+            "stage": "kmer_similarity",
+            "gene": "all",
+            "status": "complete",
+            "progress": 50,
+            "data": { "pairs": pairs }
+        }));
+
+        // Stage 3: Variant Calling
+        let hbb_str = hbb_clone.clone();
+        let variant_result = tokio::task::spawn_blocking(move || {
+            let hbb_bytes = hbb_str.as_bytes();
+            let caller = VariantCaller::new(VariantCallerConfig::default());
+            let mut rng = rand::thread_rng();
+            let sickle_pos = real_data::hbb_variants::SICKLE_CELL_POS;
+            let mut variant_count = 0u32;
+            let mut sickle_cell_detected = false;
+
+            let limit = hbb_bytes.len().min(200);
+            for i in 0..limit {
+                let depth = rng.gen_range(20..51);
+                let bases: Vec<u8> = (0..depth)
+                    .map(|_| {
+                        if i == sickle_pos && rng.gen::<f32>() < 0.5 {
+                            b'T'
+                        } else if rng.gen::<f32>() < 0.98 {
+                            hbb_bytes[i]
+                        } else {
+                            [b'A', b'C', b'G', b'T'][rng.gen_range(0..4)]
+                        }
+                    })
+                    .collect();
+                let qualities: Vec<u8> = (0..depth).map(|_| rng.gen_range(25..41)).collect();
+
+                let pileup = PileupColumn {
+                    bases,
+                    qualities,
+                    position: i as u64,
+                    chromosome: 11,
+                };
+
+                if let Some(_call) = caller.call_snp(&pileup, hbb_bytes[i]) {
+                    variant_count += 1;
+                    if i == sickle_pos {
+                        sickle_cell_detected = true;
+                    }
+                }
+            }
+            (variant_count, sickle_cell_detected)
+        })
+        .await;
+
+        match variant_result {
+            Ok((variants_found, sickle_cell_detected)) => {
+                send_event!(serde_json::json!({
+                    "stage": "variant_calling",
+                    "gene": "HBB",
+                    "status": "complete",
+                    "progress": 60,
+                    "data": {
+                        "variants_found": variants_found,
+                        "sickle_cell_detected": sickle_cell_detected
+                    }
+                }));
+            }
+            Err(_) => return,
+        }
+
+        // Stage 4: Protein Translation
+        let hbb_for_protein = hbb_clone.clone();
+        let protein_result = tokio::task::spawn_blocking(move || {
+            let hbb_bytes = hbb_for_protein.as_bytes();
+            let amino_acids = translate_dna(hbb_bytes);
+            let num_aa = amino_acids.len();
+
+            let mut contact_edges = 0usize;
+            if amino_acids.len() >= 10 {
+                let residues: Vec<ProteinResidue> = amino_acids
+                    .iter()
+                    .map(|aa| char_to_residue(aa.to_char()))
+                    .collect();
+                let protein_seq = ProteinSequence::new(residues);
+                if let Ok(graph) = protein_seq.build_contact_graph(8.0) {
+                    contact_edges = graph.edges.len();
+                }
+            }
+            (num_aa, contact_edges)
+        })
+        .await;
+
+        match protein_result {
+            Ok((amino_acids, contacts)) => {
+                send_event!(serde_json::json!({
+                    "stage": "protein",
+                    "gene": "HBB",
+                    "status": "complete",
+                    "progress": 70,
+                    "data": {
+                        "amino_acids": amino_acids,
+                        "contacts": contacts
+                    }
+                }));
+            }
+            Err(_) => return,
+        }
+
+        // Stage 5: Epigenetics
+        let epigenetics_result = tokio::task::spawn_blocking(|| {
+            let mut rng = rand::thread_rng();
+            let positions: Vec<(u8, u64)> = (0..500).map(|i| (1, i * 1000)).collect();
+            let betas: Vec<f32> = (0..500).map(|_| rng.gen_range(0.1..0.9)).collect();
+
+            let profile = MethylationProfile::from_beta_values(positions, betas);
+            let clock = HorvathClock::default_clock();
+            let predicted_age = clock.predict_age(&profile);
+            let cpg_sites = profile.sites.len();
+            (predicted_age, cpg_sites)
+        })
+        .await;
+
+        match epigenetics_result {
+            Ok((predicted_age, cpg_sites)) => {
+                send_event!(serde_json::json!({
+                    "stage": "epigenetics",
+                    "gene": "panel",
+                    "status": "complete",
+                    "progress": 80,
+                    "data": {
+                        "predicted_age": predicted_age,
+                        "cpg_sites": cpg_sites
+                    }
+                }));
+            }
+            Err(_) => return,
+        }
+
+        // Stage 6: Pharmacogenomics
+        let pharma_result = tokio::task::spawn_blocking(|| {
+            let cyp2d6_variants = vec![(42130692, b'G', b'A')];
+            let allele1 = pharma::call_star_allele(&cyp2d6_variants);
+            let allele2 = pharma::StarAllele::Star10;
+            let phenotype = pharma::predict_phenotype(&allele1, &allele2);
+            let recs = pharma::get_recommendations("CYP2D6", &phenotype);
+            (format!("{:?}", phenotype), recs.len())
+        })
+        .await;
+
+        match pharma_result {
+            Ok((phenotype, recommendations)) => {
+                send_event!(serde_json::json!({
+                    "stage": "pharma",
+                    "gene": "CYP2D6",
+                    "status": "complete",
+                    "progress": 90,
+                    "data": {
+                        "phenotype": phenotype,
+                        "recommendations": recommendations
+                    }
+                }));
+            }
+            Err(_) => return,
+        }
+
+        // Stage 7: Complete
+        let total_time_ms = start.elapsed().as_millis() as u64;
+        let _ = tx
+            .send(Ok(Event::default()
+                .event("analysis")
+                .data(
+                    serde_json::to_string(&serde_json::json!({
+                        "stage": "complete",
+                        "gene": "all",
+                        "status": "complete",
+                        "progress": 100,
+                        "data": { "total_time_ms": total_time_ms }
+                    }))
+                    .unwrap(),
+                )))
+            .await;
+    });
+
+    let stream = ReceiverStream::new(rx);
+    Sse::new(stream).keep_alive(KeepAlive::default())
+}
+
+// ---------------------------------------------------------------------------
 // Server entry point
 // ---------------------------------------------------------------------------
 
@@ -706,6 +991,7 @@ pub async fn serve() -> anyhow::Result<()> {
         .route("/api/brain/memories", get(memories_handler))
         .route("/api/brain/learning", get(learning_handler))
         .route("/api/brain/pathways", get(pathways_handler))
+        .route("/api/stream/analysis", get(stream_analysis_handler))
         .layer(cors);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));

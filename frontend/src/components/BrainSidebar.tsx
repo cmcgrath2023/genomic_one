@@ -406,9 +406,9 @@ export default function BrainSidebar() {
         className="hidden md:flex flex-col flex-shrink-0 h-screen sticky top-0 border-r border-border bg-surface/80 backdrop-blur-sm overflow-hidden z-40"
       >
         {/* Sidebar header: Logo + App Name */}
-        <div className="flex items-center px-3 py-3 border-b border-border min-h-[64px] gap-3">
-          <Link href="/" className="flex items-center gap-3 min-w-0">
-            <DnaLogo className="w-[42px] h-[42px] flex-shrink-0" />
+        <div className={`flex items-center border-b border-border min-h-[64px] ${collapsed ? 'flex-col gap-1 px-1 py-2' : 'px-3 py-3 gap-3'}`}>
+          <Link href="/" className={`flex items-center min-w-0 ${collapsed ? 'justify-center' : 'gap-3'}`}>
+            <DnaLogo className={`flex-shrink-0 ${collapsed ? 'w-[36px] h-[36px]' : 'w-[42px] h-[42px]'}`} />
             {!collapsed && (
               <motion.span
                 initial={{ opacity: 0 }}
@@ -426,7 +426,7 @@ export default function BrainSidebar() {
             size="sm"
             onPress={toggleCollapsed}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="text-zinc-400 hover:text-zinc-200 ml-auto"
+            className={`text-zinc-400 hover:text-zinc-200 ${collapsed ? '' : 'ml-auto'}`}
           >
             <svg
               width="18"
