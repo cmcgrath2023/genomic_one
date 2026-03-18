@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import DnaLogo from "@/components/DnaLogo";
+import { Button } from "@heroui/react";
 import BrainSidebar from "@/components/BrainSidebar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -19,14 +19,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Header */}
       <header className="border-b border-border bg-surface/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3">
-              <DnaLogo className="w-8 h-8" />
-              <h1 className="text-lg font-bold tracking-tight font-mono">GENOMIC ONE</h1>
-            </Link>
-          </div>
+        <div className="px-4 sm:px-6 py-2.5 flex items-center justify-between">
+          {/* Left: spacer for sidebar alignment */}
+          <div className="w-[60px] md:hidden" />
 
+          {/* Center: Status Badges */}
           <div className="hidden lg:flex items-center gap-2">
             <span className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-mono" style={{ color: 'var(--streaming-pulse)', background: 'rgba(0,201,177,0.1)' }}>
               <span className="w-2 h-2 rounded-full animate-pulse-live" style={{ background: 'var(--streaming-pulse)' }} />
@@ -45,12 +42,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
           </div>
 
-          <span
-            className="text-xs font-mono px-2.5 py-1 rounded"
-            style={{ color: 'var(--accent-gold)', background: '#1A1200' }}
-          >
-            In Silico
-          </span>
+          {/* Right: Auth + In Silico */}
+          <div className="flex items-center gap-2">
+            <Button
+              as={Link}
+              href="/brain/simulate"
+              size="sm"
+              variant="flat"
+              className="font-mono text-xs hidden sm:flex"
+              style={{ color: 'var(--accent-teal)', background: 'rgba(0,201,177,0.1)' }}
+            >
+              + New Simulation
+            </Button>
+            <Button size="sm" variant="bordered" className="font-mono text-xs" style={{ borderColor: 'var(--bg-border)', color: 'var(--text-secondary)' }}>
+              Log In
+            </Button>
+            <Button size="sm" className="font-mono text-xs" style={{ background: 'var(--accent-teal)', color: '#090E1A' }}>
+              Register
+            </Button>
+          </div>
         </div>
       </header>
 

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button, Tooltip } from "@heroui/react";
 import { Squash as Hamburger } from "hamburger-react";
 import { motion, AnimatePresence } from "framer-motion";
+import DnaLogo from "@/components/DnaLogo";
 
 const STORAGE_KEY = "brain-sidebar-collapsed";
 
@@ -219,6 +220,29 @@ export default function BrainSidebar() {
 
   const navContent = (isMobile: boolean) => (
     <nav className="flex flex-col px-2 py-2">
+      {/* Create button */}
+      {(!collapsed || isMobile) && (
+        <Link
+          href="/brain/simulate"
+          onClick={() => isMobile && setMobileOpen(false)}
+          className="flex items-center gap-2 rounded-lg px-3 py-2.5 mb-2 text-sm font-mono font-semibold transition-colors duration-150"
+          style={{ background: 'rgba(0,201,177,0.1)', color: 'var(--accent-teal)', border: '1px solid rgba(0,201,177,0.2)' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          Create
+        </Link>
+      )}
+      {collapsed && !isMobile && (
+        <Tooltip content="Create" placement="right">
+          <Link
+            href="/brain/simulate"
+            className="flex items-center justify-center rounded-lg py-2.5 mb-2 transition-colors duration-150"
+            style={{ background: 'rgba(0,201,177,0.1)', color: 'var(--accent-teal)' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          </Link>
+        </Tooltip>
+      )}
       {navSections.map((section, si) => (
         <div key={si} className={si > 0 ? "mt-2" : ""}>
           {section.heading && !collapsed && (
@@ -253,8 +277,21 @@ export default function BrainSidebar() {
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className="hidden md:flex flex-col flex-shrink-0 h-screen sticky top-0 border-r border-border bg-surface/80 backdrop-blur-sm overflow-hidden z-40"
       >
-        {/* Sidebar header */}
-        <div className="flex items-center justify-end px-3 py-3 border-b border-border min-h-[56px]">
+        {/* Sidebar header: Logo + App Name */}
+        <div className="flex items-center px-3 py-3 border-b border-border min-h-[56px] gap-2">
+          <Link href="/" className="flex items-center gap-2 min-w-0">
+            <DnaLogo className="w-8 h-8 flex-shrink-0" />
+            {!collapsed && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="font-mono text-sm font-bold tracking-tight whitespace-nowrap"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                GENOMIC ONE
+              </motion.span>
+            )}
+          </Link>
           <Button
             isIconOnly
             variant="light"
@@ -315,11 +352,8 @@ export default function BrainSidebar() {
               className="md:hidden fixed top-0 left-0 bottom-0 w-[280px] bg-surface border-r border-border z-[58] flex flex-col overflow-y-auto"
             >
               <div className="flex items-center gap-2 px-4 py-4 border-b border-border min-h-[56px]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
-                  <path d="M12 2a8 8 0 018 8c0 3-1.5 5.5-4 7v3H8v-3c-2.5-1.5-4-4-4-7a8 8 0 018-8z" />
-                  <line x1="10" y1="22" x2="14" y2="22" />
-                </svg>
-                <span className="text-sm font-semibold text-zinc-300">Brain</span>
+                <DnaLogo className="w-7 h-7" />
+                <span className="font-mono text-sm font-bold" style={{ color: 'var(--text-primary)' }}>GENOMIC ONE</span>
               </div>
               {navContent(true)}
             </motion.aside>
