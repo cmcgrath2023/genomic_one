@@ -47,6 +47,20 @@ const navSections: NavSection[] = [
           </svg>
         ),
       },
+      {
+        label: "Research Pods",
+        href: "/brain/pods",
+        icon: (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="3" />
+            <circle cx="6" cy="16" r="3" />
+            <circle cx="18" cy="16" r="3" />
+            <line x1="12" y1="11" x2="6" y2="13" />
+            <line x1="12" y1="11" x2="18" y2="13" />
+            <line x1="6" y1="16" x2="18" y2="16" />
+          </svg>
+        ),
+      },
     ],
   },
   {
@@ -148,7 +162,7 @@ const CREATE_OPTIONS = [
       <path d="M9 3h6v2H9zM12 5v3M5.5 8h13l-1.5 13H7z" />
     </svg>
   )},
-  { label: "Research Pod", desc: "Multi-gene analysis workspace", href: "/brain/memories", icon: (
+  { label: "Research Pod", desc: "Autonomous agent swarm for genomic research", href: "/brain/pods", icon: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
     </svg>
