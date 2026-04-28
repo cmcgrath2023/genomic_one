@@ -1,8 +1,9 @@
 //! Axum HTTP API server exposing genomic analysis endpoints as JSON.
 
 use axum::{
+    extract::DefaultBodyLimit,
     response::sse::{Event, KeepAlive, Sse},
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
 use futures_util::stream::Stream;
@@ -25,6 +26,7 @@ use rvdna::{
     variant::{PileupColumn, VariantCaller, VariantCallerConfig},
 };
 
+use crate::analyze;
 use crate::{cosine_similarity, char_to_residue, gc_content, GenePanel, KmerResults};
 
 // ---------------------------------------------------------------------------
@@ -970,6 +972,20 @@ async fn stream_analysis_handler() -> Sse<impl Stream<Item = std::result::Result
 }
 
 // ---------------------------------------------------------------------------
+// User-supplied DNA analysis
+// ---------------------------------------------------------------------------
+
+async fn analyze_handler(
+    body: String,
+) -> std::result::Result<Json<analyze::AnalyzeResult>, analyze::AnalyzeError> {
+    let parsed = analyze::parse(&body)?;
+    let result = tokio::task::spawn_blocking(move || analyze::run(parsed))
+        .await
+        .map_err(|e| analyze::AnalyzeError::Internal(format!("join: {e}")))??;
+    Ok(Json(result))
+}
+
+// ---------------------------------------------------------------------------
 // Server entry point
 // ---------------------------------------------------------------------------
 
@@ -992,6 +1008,10 @@ pub async fn serve() -> anyhow::Result<()> {
         .route("/api/brain/learning", get(learning_handler))
         .route("/api/brain/pathways", get(pathways_handler))
         .route("/api/stream/analysis", get(stream_analysis_handler))
+        .route(
+            "/api/analyze",
+            post(analyze_handler).layer(DefaultBodyLimit::max(analyze::MAX_BODY_BYTES)),
+        )
         .layer(cors);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));

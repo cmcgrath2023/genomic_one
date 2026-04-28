@@ -4,6 +4,7 @@
 //! alignment, variant calling, protein translation, epigenomics,
 //! pharmacogenomics, and the RVDNA binary format.
 
+mod analyze;
 mod api;
 
 use rvdna::prelude::*;
